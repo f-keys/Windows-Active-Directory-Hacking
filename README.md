@@ -17,3 +17,5 @@ Sudo respo
 
 simulate an event occuring.= - 
 
+hashcash -m 5600 hashes.txt /path/to/wordlist/ 
+<img width="1877" height="390" alt="image" src="https://github.com/user-attachments/assets/da11dacb-30ec-435e-963f-008ea1ae7db7" />
