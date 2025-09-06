@@ -52,11 +52,16 @@ Set the rhosts, SMBDomain, SMBPass, & SMBUser with the information gotten from e
 We have gotten a shell
 <img width="877" height="171" alt="image" src="https://github.com/user-attachments/assets/c0ce4592-70f3-41f4-a89e-4838116233f3" />
 
-you can also use the sam hash that was gotten from ntlmrelay.py to gain shell. Here, you are gaining shell as in administrator. To do this, You meed to set the SMBUser to administrator. you can also remove the SMBDomain that was previously set as it is not needed. we are loggin locally as in admin. Then finally set eh SMBPass withe the admin sam hashes
+1b. you can also use the sam hash that was gotten from ntlmrelay.py to gain shell. Here, you are gaining shell as in administrator. To do this, You meed to set the SMBUser to administrator. you can also remove the SMBDomain that was previously set as it is not needed. we are loggin locally as in admin. Then finally set eh SMBPass withe the admin sam hashes
 <img width="917" height="201" alt="image" src="https://github.com/user-attachments/assets/781b0459-7d41-409b-a135-9d77cc64f8a3" />
 
 
 
+2. The use of psexec.py tool
+   psexec.py DOMAIN/user:@ip-address
+<img width="577" height="262" alt="image" src="https://github.com/user-attachments/assets/378a98e9-2e49-4356-b36b-85bbf91b355a" />
+
+<img width="1004" height="255" alt="image" src="https://github.com/user-attachments/assets/d8bb87ce-031d-4c61-900b-93febda1acb3" />
 
 
-3. The use of psexec.py tool
+
