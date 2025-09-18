@@ -95,3 +95,6 @@ If WAD is not in use internally, disable it via Group Policy and by disabling th
 Relaying to LDAP and LDAPS can only be mitigated by enabling both LDAP signing and LDAP channel binding.
 Consider Administrative users to the Protected Users group or marking them as Account is sensitive and cannot be delegated, which will prevent any impersonation of that user via delegation.
 
+4. Passback attacks
+
+
