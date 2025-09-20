@@ -97,4 +97,8 @@ Consider Administrative users to the Protected Users group or marking them as Ac
 
 4. Passback attacks
 
+POST-COMPROMISE ACTIVE DIRECTORY ENUMERATION(WHAT HAPPENS AFTER GETTING A VALID ACCOUNT
+
+A. Domain Enumeration with ldapdomaindump
+B. Domain Enumneration with Bloodhound
 
