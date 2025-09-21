@@ -112,10 +112,20 @@ to run an injester i.e so that we will be able to use the output and load it up 
     <img width="1906" height="889" alt="image" src="https://github.com/user-attachments/assets/9d1d6714-08d0-43c1-bcf6-d5538269c77c" />
 
 
-
-
 C. Domain Enumeration with Plumhound
+same as other enumeration tools
+you can run the command 
+   PlumHound.py --easy -p <passwd_of_neo4j>
+   this command is used to test database connectiuon, it also returns Domain users to stdout
+   <img width="691" height="543" alt="image" src="https://github.com/user-attachments/assets/8baa0222-d9e7-47b0-a1e6-9d3a6d069a85" />
+
+PlumHound.py -x tasks/default.tasks -p neo4j1
+
+   
+     <img width="1626" height="966" alt="Screenshot 2025-09-21 205422" src="https://github.com/user-attachments/assets/074e266f-39bb-4f8a-ad39-b5c98cc11fa2" /> 
+     
 D. Domain Enumeration with Pingcastle
+
 
 POST COMPROMISE ATTACKS(here, we already have a valid account, what can we do with that ?
 a. pass the password/ pass the hash attack
