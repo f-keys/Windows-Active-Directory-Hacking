@@ -97,8 +97,31 @@ Consider Administrative users to the Protected Users group or marking them as Ac
 
 4. Passback attacks
 
-POST-COMPROMISE ACTIVE DIRECTORY ENUMERATION(WHAT HAPPENS AFTER GETTING A VALID ACCOUNT
+POST-COMPROMISE ACTIVE DIRECTORY ENUMERATION(WHAT HAPPENS AFTER GETTING A VALID ACCOUNT)
+we enumeratee
 
 A. Domain Enumeration with ldapdomaindump
+   <img width="808" height="276" alt="image" src="https://github.com/user-attachments/assets/f0f4b791-de66-4f0c-a59a-4b1aaceb7e10" />
+command: ldapdomaindump ldaps://ip_addresof_DC -u 'Domanin\User' -p 'passwd'
 B. Domain Enumneration with Bloodhound
+to run an injester i.e so that we will be able to use the output and load it up on the bloodhound application, you can use the command:
+   bloodhound-python -d <domain> -u <user> -p <password> -ns <ip_addres_of_DC> -c all 
+   <img width="719" height="345" alt="image" src="https://github.com/user-attachments/assets/f71c1910-d78a-463b-b9c2-3fdb22b8b543" />
+   <img width="691" height="88" alt="image" src="https://github.com/user-attachments/assets/6d3794d4-daa1-4d21-b394-6e1292869af9" />
+ we can upload the json files into bloodhound for a more interactive analysis
+    <img width="1906" height="889" alt="image" src="https://github.com/user-attachments/assets/9d1d6714-08d0-43c1-bcf6-d5538269c77c" />
+
+
+
+
+C. Domain Enumeration with Plumhound
+D. Domain Enumeration with Pingcastle
+
+POST COMPROMISE ATTACKS(here, we already have a valid account, what can we do with that ?
+a. pass the password/ pass the hash attack
+if we crack a password and/or dump the SAM hashes, we can leverage both for lateral movemnt in networks
+tool used - crackmapexec 
+cmd- crackmapexec smb <ip/CIDR> -u <user> -d <domain> -p <pass>
+
+
 
