@@ -186,13 +186,27 @@ Pass the hash / Pass the password Mitigation
 • Limits pass attacks as hash/password is strong and constantly rotated
 
 b. Kerberoasting attacks
-This attack takes advantage of service accounts
+This attack takes advantage of service accounts(explain better)
    <img width="962" height="668" alt="image" src="https://github.com/user-attachments/assets/2245384c-ca81-4237-a8b7-64bc1082709a" />
-
+Tool used: GetuserSPNS
 cmd: impacket-GetUserSPNs FKEYS.local/bjames:Password! -dc-ip 192.168.182.139 -request
+the command above requests for a ticket granting ticket(tgt). Just think of it this way, if you have if a compromised domain credential, you can request for a ticket granting ticket
    <img width="895" height="374" alt="image" src="https://github.com/user-attachments/assets/ccb90c8e-47b1-4f5e-8e06-12909809244c" />
 
-   
-
+we can the crack the ticket using hashcat
 hashcat -m 13100 krb.txt /usr/share/wordlists/rockyou.txt
+
+mitigation strategies for kerberoasting attacks
+1. Strong Passwords
+2. Least privilege
+
+c. Token Impersonation attacks
+What are tokens?
+• Temporary keys that allow you access to a system/network without having to provide credentials each time you access a file.
+Think cookies for computers.
+Two types:
+• Delegate - Created for logging into a machine or using Remote Desktop
+• Impersonate - "non-interactive" such as attaching a network drive or a domain logon script
+
+
 
