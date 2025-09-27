@@ -202,11 +202,44 @@ mitigation strategies for kerberoasting attacks
 
 c. Token Impersonation attacks
 What are tokens?
+
 • Temporary keys that allow you access to a system/network without having to provide credentials each time you access a file.
 Think cookies for computers.
 Two types:
+
 • Delegate - Created for logging into a machine or using Remote Desktop
 • Impersonate - "non-interactive" such as attaching a network drive or a domain logon script
+
+To perform the Token impersonation attack, we can make use of metasploit
+first, we gain a shell (meterpreter shell), from the compromised credentials.
+after we gain the meterpreter shell, we then load up the incognito extension. 
+   <img width="894" height="205" alt="image" src="https://github.com/user-attachments/assets/f7a75f5e-ae70-4aed-89a8-3ae89d62f7a8" />
+
+we can list tokens with the command: list_tokens -u
+
+   <img width="474" height="182" alt="image" src="https://github.com/user-attachments/assets/0997b78d-99ed-4c5c-8373-f01d4aca3499" />
+
+To impersonate the user or accoount we see when we run the list_token command,
+we can run the command: impersonate_token domain\\user
+   <img width="380" height="52" alt="image" src="https://github.com/user-attachments/assets/41cc23c5-091b-44a8-a661-0c2e31613e39" />
+   Now, we have successfully impersonated the user
+
+if an admin user also logins into the machine we impersonated,  we will also be able to impersonate the admin user
+
+   <img width="473" height="504" alt="image" src="https://github.com/user-attachments/assets/517c02fd-fb38-47d5-91c4-64c94315c96a" />
+   Here we have successfully impersonate the admin
+
+we can take it a step further to add a new user into the domain admin group as seen in the picture below:
+
+   <img width="684" height="206" alt="image" src="https://github.com/user-attachments/assets/abc32356-8326-41e7-aed7-cc93b42f4fd5" />
+
+
+   
+
+
+
+
+
 
 
 
