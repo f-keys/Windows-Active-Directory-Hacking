@@ -233,6 +233,19 @@ we can take it a step further to add a new user into the domain admin group as s
 
    <img width="684" height="206" alt="image" src="https://github.com/user-attachments/assets/abc32356-8326-41e7-aed7-cc93b42f4fd5" />
 
+Token Impersonation mitigation strategies
+a. limit user/group token creation
+b. account tiering
+c. local admin restriction
+
+d. LNK File Attacks
+LNK file attacks involve the malicious use of Windows shortcut files to execute harmful commands or deliver payloads when opened by a user.
+
+say for example we have access to a file share. we can dump a malicious file into it. 
+
+   <img width="640" height="145" alt="image" src="https://github.com/user-attachments/assets/9fa40aa7-7edd-41ad-a8f2-7372db5a9767" />
+if the file created gets dumped into the file share and a user visits, we can capture the user hash
+
 
    
 
