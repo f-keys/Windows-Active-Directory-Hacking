@@ -40,14 +40,51 @@ Concise, lab-oriented notes about offensive techniques against Windows Active Di
 - Example forest name used in these notes: `FKEYS.local`.
 - Install **Active Directory Certificate Services** if you plan to experiment with certificate-based attacks later.
 
-> **Note:** remove or replace real hostnames/IPs/credentials before publishing.
 
 ---
 
 ## Initial attack vectors
 
 ### LLMNR Poisoning
-- **High-level:** LLMNR (and NetBIOS name resolution) can allow an attacker on the same subnet to respond to name resolution requests and capture NTLM challenge/response hashes.
+# Summary: LLMNR / NetBIOS Poisoning → NTLM Capture
+
+## What happens
+- When DNS fails, Windows falls back to **LLMNR/NetBIOS** to resolve hostnames.  
+- These protocols are unauthenticated, so **any host on the local network can reply**.  
+- An attacker can answer the query, making the victim connect to them instead of the real server.  
+- The victim then tries to authenticate (usually with **NTLM**).  
+- NTLM uses a **challenge/response** exchange:  
+  - The attacker sends a random challenge.  
+  - The victim responds with a value derived from their credentials.  
+- The attacker now has the **NTLM challenge/response pair** (“hash”), which can sometimes be replayed or attacked offline.  
+
+---
+
+## Why this works
+- Windows trusts unauthenticated LLMNR/NetBIOS replies.  
+- NTLM does not mutually verify the server, so a fake server can request authentication.  
+- Legacy defaults keep these protocols enabled in many environments.  
+
+---
+
+## Limitations
+- The attacker does **not** get the plaintext password directly.  
+- Value depends on environment (e.g., if SMB signing, Kerberos-only auth, or PAM are enforced).  
+
+---
+
+## Defenses
+- Disable **LLMNR** and **NetBIOS** if not needed.  
+- Reduce or block **NTLM** usage; prefer **Kerberos**.  
+- Enforce **SMB signing** and LDAP signing/channel binding.  
+- Use **unique local admin passwords** (LAPS/PAM).  
+- Monitor for **suspicious LLMNR/NetBIOS responses** and unusual **NTLM authentication attempts**.  
+
+---
+
+## Takeaway
+LLMNR/NetBIOS poisoning happens because Windows trusts unauthenticated local name replies and will attempt NTLM authentication to whoever answers. This lets attackers capture hash-like artifacts. The best defenses are to disable legacy name resolution, minimize NTLM, enforce signing, and monitor for abnormal authentication traffic.
+
 - **Tool (example):**
 ```bash
 # responder: listen on interface eth0, verbose, log, etc.
