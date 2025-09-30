@@ -84,69 +84,11 @@ Concise, lab-oriented notes about offensive techniques against Windows Active Di
 
 
 - **Tool (example):**
-  # Windows-Active-Directory-Hacking
 
-> Study notes & lab guide — **authorized lab use only**.  
-> Reference: TCM Academy.  
-> Remove any real credentials, IPs, or customer data before publishing.
-
----
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Lab setup](#lab-setup)
-- [Initial attack vectors](#initial-attack-vectors)
-  - [LLMNR Poisoning](#llmnr-poisoning)
-  - [SMB Relay](#smb-relay)
-  - [IPv6 / mitm6](#ipv6--mitm6)
-  - [Passback attacks](#passback-attacks)
-- [Gaining shells & lateral movement](#gaining-shells--lateral-movement)
-- [Post-compromise enumeration](#post-compromise-enumeration)
-  - [ldapdomaindump](#ldapdomaindump)
-  - [BloodHound / PlumHound / PingCastle](#bloodhound--plumhound--pingcastle)
-- [Post-compromise attacks & persistence](#post-compromise-attacks--persistence)
-  - [Pass-the-Hash / Pass-the-Password](#pass-the-hash--pass-the-password)
-  - [Kerberoasting](#kerberoasting)
-  - [Token impersonation](#token-impersonation)
-  - [LNK file attacks](#lnk-file-attacks)
-  - [GPP / cPassword](#gpp--cpassword)
-- [Domain compromise: NTDS & Golden Tickets](#domain-compromise-ntds--golden-tickets)
-- [Mitigations summary](#mitigations-summary)
-- [Responsible use & license](#responsible-use--license)
-
----
-
-## Overview
-
-Concise lab-oriented notes about offensive techniques against Windows Active Directory environments. Intended for authorized labs and learning only.
-
----
-
-## Lab setup
-
-- Minimal lab: 1 Windows Server (Domain Controller — e.g., Windows Server 2022) and two Windows 10/11 clients.
-- Rename the DC (example used in notes: `UNCLE-DC`).
-- Promote server to Domain Controller (install **Active Directory Domain Services**).
-- Example forest name used in notes: `FKEYS.local`.
-- Optionally install **Active Directory Certificate Services** to explore certificate-related attacks later.
-
----
-
-## Initial attack vectors
-
-### LLMNR Poisoning
-
-- **What it is (simple):** LLMNR/NetBIOS name resolution lets clients ask “who is `<name>`?” on the local subnet. If an attacker answers that query they can capture NTLM challenge/response hashes.
-- **Why it works:** Windows clients try LLMNR when DNS fails or for local name resolution — no strong authentication in that protocol.
-- **Example listener (Responder):**
-```bash
-# run responder on attacker machine (interface eth0)
+  # run responder on attacker machine (interface eth0)
 sudo responder -I eth0 -ldwPv
 
-
-** <img width="696" height="197" alt="image" src="https://github.com/user-attachments/assets/9d0d67af-20d0-4068-b26c-d3cc71c62a3b" />
-
+<img width="696" height="197" alt="image" src="https://github.com/user-attachments/assets/9d0d67af-20d0-4068-b26c-d3cc71c62a3b" />
 
 # Windows-Active-Directory-Hacking
 The repo contains information on how to hack a windows active directory. REFERENCE: TCM ACADEMY
