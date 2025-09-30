@@ -82,8 +82,6 @@ Concise, lab-oriented notes about offensive techniques against Windows Active Di
 
 ---
 
-## Takeaway
-LLMNR/NetBIOS poisoning happens because Windows trusts unauthenticated local name replies and will attempt NTLM authentication to whoever answers. This lets attackers capture hash-like artifacts. The best defenses are to disable legacy name resolution, minimize NTLM, enforce signing, and monitor for abnormal authentication traffic.
 
 - **Tool (example):**
 ```bash
