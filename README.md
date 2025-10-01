@@ -74,7 +74,7 @@ Concise, lab-oriented notes about offensive techniques against Windows Active Di
 ---
 
 ## Defenses
-- Disable **LLMNR** and **NetBIOS** if not needed.  
+- Disable **LLMNR** (Via Group Policy) and **NetBIOS** if not needed.  
 - Reduce or block **NTLM** usage; prefer **Kerberos**.  
 - Enforce **SMB signing** and LDAP signing/channel binding.  
 - Use **unique local admin passwords** (LAPS/PAM).  
@@ -92,6 +92,10 @@ The hash of the victim is them capture on responder
 
 
 <img width="696" height="197" alt="image" src="https://github.com/user-attachments/assets/9d0d67af-20d0-4068-b26c-d3cc71c62a3b" />
+
+We can then crack the Hash using hashcat
+```hashcash -m 5600 hashes.txt /path/to/wordlist/
+
 
 # Windows-Active-Directory-Hacking
 The repo contains information on how to hack a windows active directory. REFERENCE: TCM ACADEMY
