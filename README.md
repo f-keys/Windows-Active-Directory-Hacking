@@ -87,6 +87,9 @@ Concise, lab-oriented notes about offensive techniques against Windows Active Di
 
   ## run responder on attacker machine (interface eth0)
 sudo responder -I eth0 -ldwPv
+simulate an event occuring. on victim system- 
+The hash of the victim is them capture on responder
+
 
 <img width="696" height="197" alt="image" src="https://github.com/user-attachments/assets/9d0d67af-20d0-4068-b26c-d3cc71c62a3b" />
 
