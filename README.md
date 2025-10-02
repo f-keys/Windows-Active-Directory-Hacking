@@ -418,32 +418,54 @@ PlumHound.py --easy -p <passwd_of_neo4j>
 ```
    <img width="691" height="543" alt="image" src="https://github.com/user-attachments/assets/8baa0222-d9e7-47b0-a1e6-9d3a6d069a85" />
 
-```PlumHound.py -x tasks/default.tasks -p neo4j1
+```bash
+PlumHound.py -x tasks/default.tasks -p neo4j1
 ```
    <img width="1626" height="966" alt="Screenshot 2025-09-21 205422" src="https://github.com/user-attachments/assets/074e266f-39bb-4f8a-ad39-b5c98cc11fa2" /> 
      
-D. Domain Enumeration with Pingcastle
+# D. Domain Enumeration with PingCastle
 
+**Purpose**  
+PingCastle is an Active Directory security auditing tool. Unlike BloodHound or PlumHound, which focus on relationship/graph analysis, PingCastle focuses on assessing the **security posture of an AD environment** and identifying misconfigurations, outdated systems, and risky practices. It generates detailed reports with scores and recommendations.
 
-POST COMPROMISE ATTACKS(here, we already have a valid account, what can we do with that ?
-a. pass the password/ pass the hash attack(pass attacks)
-if we crack a password and/or dump the SAM hashes, we can leverage both for lateral movemnt in networks
-tool used - crackmapexec 
-cmd- crackmapexec smb <ip/CIDR> -u <user> -d <domain> -p <password>
+---
+
+# Post-Compromise Actions — Pass-the-Password / Pass-the-Hash (Pass Attacks)
+
+**Short summary**  
+With a valid account (or captured hash), an attacker can authenticate to other hosts and move laterally. Two common approaches are **pass-the-password** (use the plaintext credential) and **pass-the-hash** (present an NTLM hash instead of the password). Both let an attacker access systems without initially having interactive access to those systems.
+
+---
+
+## A. What these attacks are (simple)
+- **Pass-the-Password (PtP):** use a recovered plaintext password to authenticate to remote services (SMB, WinRM, RDP, etc.) and run commands or open shells.  
+- **Pass-the-Hash (PtH):** present the captured NTLM hash directly during SMB/NTLM authentication so you do not need the plaintext password. If the target accepts NTLM, the authentication can succeed and grant access.
+
+Both techniques rely on the target accepting NTLM/SMB authentication and on the credentials (or hash) being valid for the account on the target host.
+
+---
+
+## B. Typical tool: `crackmapexec` (CME)
+
+### Example — using a plaintext password
+```bash
+crackmapexec smb <ip-or-CIDR> -u <user> -d <domain> -p <password>
+```
    <img width="1334" height="118" alt="image" src="https://github.com/user-attachments/assets/77fa776b-f988-44cd-bd32-0c11108db56d" />
 
-we can also use hashes(NTLMv1). this is what is refered to as pass the the hash attack
-cmd - crackmapexec -smb <ip/CIDR> -u administrator -H <ntlm_hash> --local-auth
-
+- We can also use hashes(NTLMv1). 
+```bash
+crackmapexec -smb <ip/CIDR> -u administrator -H <ntlm_hash> --local-auth
+```
    <img width="1345" height="138" alt="image" src="https://github.com/user-attachments/assets/c24d7d97-72a4-43b7-a94d-0b8a77fc5945" />
-You actually do not need to crack the hash, just pass it around
+- You actually do not need to crack the hash, just pass it around
 
-you can also do --sam flag to dump the sam hashes.
+- You can also do --sam flag to dump the sam hashes.
 
    <img width="1266" height="343" alt="image" src="https://github.com/user-attachments/assets/fa252dbe-ceb8-435d-8603-77380db3c703" />
 
 
-you can also do --shares to enumerate shares permissions.
+- You can also do --shares to enumerate shares permissions.
 
    <img width="1249" height="335" alt="image" src="https://github.com/user-attachments/assets/ebf6b291-1c53-40f3-8005-037e9aa229ef" />
 
