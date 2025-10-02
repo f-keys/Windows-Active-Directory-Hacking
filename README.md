@@ -45,8 +45,7 @@ Concise, lab-oriented notes about offensive techniques against Windows Active Di
 
 ## Initial attack vectors
 
-### LLMNR Poisoning
-# Summary: LLMNR / NetBIOS Poisoning → NTLM Capture
+### 1 LLMNR Poisoning
 
 ## What happens
 - When DNS fails, Windows falls back to **LLMNR/NetBIOS** to resolve hostnames.  
@@ -89,7 +88,7 @@ We can then crack the Hash using hashcat. `hashcash -m 5600 hashes.txt /path/to/
 
 <img width="1877" height="390" alt="image" src="https://github.com/user-attachments/assets/da11dacb-30ec-435e-963f-008ea1ae7db7" />
 
-### SMB Relay Attacks
+### 2 SMB Relay Attacks
 
 - Instead of capturing the hash with the responder tool, we can relay the hash via smb and gain access to a machine.An SMB relay attack lets an attacker take an authentication attempt from one machine and forward (relay) it to another machine. If the forwarded credentials are accepted, the attacker can act as that user on the second machine — often without ever cracking the password.
 
@@ -132,7 +131,7 @@ We can then crack the Hash using hashcat. `hashcash -m 5600 hashes.txt /path/to/
 - account tiering
 - Local admin restriction
 
-### IPV6 Attacks (DNS takeover Via IPV6)
+### 3 IPV6 Attacks (DNS takeover Via IPV6)
 - What it is:
 An attacker uses IPv6 network messages to convince Windows hosts to use the attacker as their DNS/route, so the attacker can make those hosts resolve internal names to the attacker and capture/relay authentication attempts (LDAP/SMB) to a Domain Controller.
 
@@ -210,7 +209,69 @@ For admin or high-value accounts:
 
 This prevents attackers from impersonating privileged users through credential relaying or delegation.  
 
+### 4 Passback attacks
+- Reference:  https://www.mindpointgroup.com/blog/how-to-hack-through-a-pass-back-attack/
 
+# Pass-Back Attack (MFP / Printer Context)
+
+**Short summary**  
+A *pass-back* attack against a Multi-Function Printer (MFP) is when an attacker changes the printer's configured service addresses (for example LDAP or SMTP) to point at an attacker-controlled host. When the device or a user authenticates to that service, the credentials are sent to the attacker. The attacker can then reuse or relay those credentials to access network resources.
+
+---
+
+## What is targeted
+- **MFP / Multi-Function Printer** (device that prints, scans, emails, and often integrates with directory services).  
+- Configuration fields on the device such as LDAP server, SMTP server, or other authentication endpoints.
+
+---
+
+## Why it works (simple)
+- Many MFPs perform automatic authentication to the servers configured in their settings.  
+- Admin interfaces are sometimes left with default credentials or exposed to users.  
+- If the configured server is changed to an attacker host, the device (or users at the device) will authenticate to the attacker.
+
+---
+
+## High-level attack flow
+1. **Gain admin access** to the MFP web admin (EWS) or otherwise change its settings.  
+2. **Replace a configured service host** (e.g., LDAP server, SMTP relay) with an attacker-controlled host.  
+3. **Trigger an authentication event** — user logs in at the device or the device performs a scheduled bind.  
+4. **Capture credentials** sent to the attacker (cleartext, LDAP bind, or NTLM handshake, depending on configuration).  
+5. **Reuse or relay** the captured credentials to other services to gain access.
+
+---
+
+## What an attacker can capture
+- Credentials entered on the printer control panel.  
+- Device-stored service credentials (if the MFP keeps them).  
+- Authentication handshakes (LDAP binds, NTLM exchanges) that may be replayed or relayed.
+
+---
+
+## Detection signals (what to look for)
+- Outbound connections from printers to unfamiliar IPs or unexpected LDAP/SMTP servers.  
+- Changes in MFP configuration (check backups or configuration snapshots).  
+- Authentication attempts originating from the printer’s IP to internal services.  
+- Multiple or unusual EWS (admin UI) login attempts, especially using default passwords.
+
+---
+
+## Practical mitigations
+- **Harden MFP administration**  
+  - Change default admin credentials.  
+  - Limit access to the admin interface (management VLAN, IP ACLs).  
+- **Network segmentation**  
+  - Put printers on a management VLAN and block them from directly contacting critical services.  
+- **Restrict stored credentials**  
+  - Avoid storing high-privilege credentials on devices; use low-privilege service accounts where required.  
+- **Require encrypted/authenticated services**  
+  - Use LDAPS / SMTP with TLS and avoid plaintext authentication.  
+- **Monitor and audit**  
+  - Regularly back up and review printer configurations; monitor outbound connections from MFPs.  
+- **Physical & inventory controls**  
+  - Control physical access to devices and keep an accurate inventory of MFPs and their locations.
+
+---
 
 # Windows-Active-Directory-Hacking
 The repo contains information on how to hack a windows active directory. REFERENCE: TCM ACADEMY
