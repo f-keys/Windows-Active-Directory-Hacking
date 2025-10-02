@@ -150,7 +150,7 @@ What it does: tells mitm6 to advertise the IPv6 network for the domain `fkeys.lo
 
 before you run the previous command, run this command on your other terminal:
 
-`ntlmrelayx.py -6 -t ldaps://IP_address_of_DC -wh anything.fkeys.local -l lootbox`
+- `ntlmrelayx.py -6 -t ldaps://IP_address_of_DC -wh anything.fkeys.local -l lootbox`
 **What the command does**
 - `-6` — operate using IPv6 (listen for and handle IPv6-based auth attempts).
 - `-t ldaps://IP_address_of_DC` — relay captured authentication attempts to the Domain Controller over LDAPS (secure LDAP) at that IP. In other words: when a client authenticates to the attacker, ntlmrelayx will immediately try the same credentials against the specified LDAPS service on the DC.
@@ -164,7 +164,51 @@ before you run the previous command, run this command on your other terminal:
 
 - But to take things further, if a domain admin user logins, ntlmrelayx will also capture it. 
 <img width="647" height="389" alt="image" src="https://github.com/user-attachments/assets/943f410c-e694-4859-a094-97b03d4f101a" />
-ntlmrelayx then creates a new user. 
+- ntlmrelayx then creates a new user for us. 
+
+## Mitigation Strategies for IPv6 Attacks
+
+IPv6 poisoning (e.g., using **mitm6**) exploits the fact that Windows systems query for IPv6 addresses even in IPv4-only networks. Attackers can spoof these responses and redirect authentication traffic.  
+
+### Key Mitigations
+
+### 1. Control IPv6 Traffic if Not Needed
+If IPv6 is not used internally, block unnecessary IPv6 traffic instead of fully disabling IPv6 (which may break some Windows features).  
+Use **Group Policy** to block the following predefined firewall rules:  
+
+- **Inbound:** `Core Networking - DHCPv6-In`  
+- **Inbound:** `Core Networking - Router Advertisement (ICMPv6-In)`  
+- **Outbound:** `Core Networking - DHCPv6-Out`  
+
+---
+
+### 2. Disable WPAD (if not used)
+If **Web Proxy Auto-Discovery (WPAD)** is not required:  
+
+- Disable it through **Group Policy**.  
+- Disable the **WinHttpAutoProxySvc** service.  
+
+This prevents proxy auto-configuration requests that attackers could abuse for credential theft.  
+
+---
+
+### 3. Secure LDAP and LDAPS
+Enable:  
+
+- **LDAP Signing**  
+- **LDAP Channel Binding**  
+
+This ensures only trusted and integrity-protected sessions are accepted, blocking credential relays to the Domain Controller.  
+
+---
+
+### 4. Harden High-Privilege Accounts
+For admin or high-value accounts:  
+
+- Add them to the **Protected Users** group.  
+- Or mark accounts as **“Account is sensitive and cannot be delegated”** in Active Directory.  
+
+This prevents attackers from impersonating privileged users through credential relaying or delegation.  
 
 
 
