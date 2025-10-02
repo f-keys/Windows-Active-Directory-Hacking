@@ -127,11 +127,44 @@ We can then crack the Hash using hashcat. `hashcash -m 5600 hashes.txt /path/to/
   <img width="802" height="473" alt="image" src="https://github.com/user-attachments/assets/5f7b7208-57e1-45fe-bdd4-6aa267a79dc0" />
 
 ## SMB relay attacks mitigation
-a. enable smb signing on all devices
-b. disable NTLM authentication
-c. account tiering
-d. Local admin restriction
+- enable smb signing on all devices
+- disable NTLM authentication
+- account tiering
+- Local admin restriction
 
+### IPV6 Attacks (DNS takeover Via IPV6)
+- What it is:
+An attacker uses IPv6 network messages to convince Windows hosts to use the attacker as their DNS/route, so the attacker can make those hosts resolve internal names to the attacker and capture/relay authentication attempts (LDAP/SMB) to a Domain Controller.
+
+**How it works:**
+- Attacker advertises itself on the local network as an IPv6 router/DNS server (this is the “mitm6” step).
+- Windows clients accept that advertisement, start using the attacker for IPv6 DNS and name resolution.
+- When a client resolves or contacts an internal service name (e.g., for domain services), it ends up talking to the attacker.
+- The attacker captures the authentication attempt (NTLM handshake) and relays it to a target (usually the Domain Controller) using a tool like ntlmrelayx. If the relay is accepted, the attacker can gain privileged access.
+
+**Tools used - mitm6, ntlmrelayx**
+`mitm6 -d fkeys.local`
+What it does: tells mitm6 to advertise the IPv6 network for the domain `fkeys.local`.
+- mitm6 will send IPv6 Router Advertisements and act as an IPv6 DNS responder for the local network. As a result, many Windows clients will pick up an IPv6 address/gateway/DNS pointing at the attacker and start asking that attacker to resolve internal names
+<img width="635" height="89" alt="image" src="https://github.com/user-attachments/assets/7a25c347-297c-4ba8-8a10-7e311536848e" />
+
+before you run the previous command, run this command on your other terminal:
+
+`ntlmrelayx.py -6 -t ldaps://IP_address_of_DC -wh anything.fkeys.local -l lootbox`
+**What the command does**
+`-6` — operate using IPv6 (listen for and handle IPv6-based auth attempts).
+`-t ldaps://IP_address_of_DC` — relay captured authentication attempts to the Domain Controller over LDAPS (secure LDAP) at that IP. In other words: when a client authenticates to the attacker, ntlmrelayx will immediately try the same credentials against the specified LDAPS service on the DC.
+`-wh anything.fkeys.local` — serves a WPAD file that sets the proxy to anything.fkeys.local, causing clients that request wpad.dat to try authenticating to that host.
+`-l lootbox` — store logs/output (captured sessions, shells, or files) in the lootbox folder so you can examine results later.
+
+- Then we wait for an event to happen. but for simulation purpose, we can trigger a restart event from the machine on the network. as soon as we restart the a machine on the network, ntlmrelayx captures it.
+<img width="629" height="93" alt="image" src="https://github.com/user-attachments/assets/485e615d-17d3-4e3d-a86a-505294d81e7a" />
+On navigating to "lootbox" folder created, we get alot more information. This is possible because of ldapdomain dump
+<img width="1071" height="380" alt="image" src="https://github.com/user-attachments/assets/be47416c-929a-4f16-bf71-11ae86868a9e" />
+
+But to take things further, if a domain admin user logins, ntlmrelayx will also capture it. 
+<img width="647" height="389" alt="image" src="https://github.com/user-attachments/assets/943f410c-e694-4859-a094-97b03d4f101a" />
+ntlmrelayx then creates a new user. 
 
 
 
@@ -171,26 +204,7 @@ We have gotten a shell
 <img width="1004" height="255" alt="image" src="https://github.com/user-attachments/assets/d8bb87ce-031d-4c61-900b-93febda1acb3" />
 
 3. IPV6 Attacks (DNS takeover Via IPV6)
- a simple yet broad overview of what the attack is about
-
-set up attacker machine ---- then listen for IPV6 messages-(spoofing) ----
-when this happen, authrnication can be gotten to the DOmaain control via ldap or SMB
-
-tools used - mitm6, ntlmrelayx
-command - mitm6 -d fkeys.local(what does the command do)
-before you run the previous command, run this command on your other terminal:
-
-   ntlmrelayx.py -6 -t ldaps://IP_address_of_DC -wh anything.fkeys.local -l lootbox (explain what the command does.)
-Then we wait for an event to happen. but for simulation purpose, we can trigger a restart event from the machine on the network. as soon as we restart the a machine on the network, 
-ntlmrelayx captures it.
-<img width="629" height="93" alt="image" src="https://github.com/user-attachments/assets/485e615d-17d3-4e3d-a86a-505294d81e7a" />
-On navigating to "lootbox" folder created, we get alot more information. This is possible because of ldapdomain dump
-<img width="1071" height="380" alt="image" src="https://github.com/user-attachments/assets/be47416c-929a-4f16-bf71-11ae86868a9e" />
-
-But to take things further, if a domain admin user logins, ntlmrelayx will also capture it. 
-<img width="647" height="389" alt="image" src="https://github.com/user-attachments/assets/943f410c-e694-4859-a094-97b03d4f101a" />
-ntlmrelayx then creates a new user. 
-
+ 
 Mitigation strategies for IPV6 attacks
 IPv6 poisoning abuses the fact that Windows queries for an IPv6 address even in IPv4-only environments. If you do not use IPv6 internally, the safest way to prevent mitm6 is to block DHCPv6 traffic and incoming router advertisements in Windows Firewall via Group Policy. Disabling IPv6 entirely may have unwanted side effects. Setting the following predefined rules to Block instead of Allow prevents the attack from working:
 (Inbound) Core Networking - Dynamic Host Configuration Protocol for IPv6(DHCPV6-In)
