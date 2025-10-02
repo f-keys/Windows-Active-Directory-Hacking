@@ -380,7 +380,7 @@ ldapdomaindump ldaps://<DC_IP> -u 'DOMAIN\User' -p 'Password'
 ```
 ---
    <img width="808" height="276" alt="image" src="https://github.com/user-attachments/assets/f0f4b791-de66-4f0c-a59a-4b1aaceb7e10" />
-command: ldapdomaindump ldaps://ip_addresof_DC -u 'Domanin\User' -p 'passwd'
+
 B. Domain Enumneration with Bloodhound
 to run an injester i.e so that we will be able to use the output and load it up on the bloodhound application, you can use the command:
    bloodhound-python -d <domain> -u <user> -p <password> -ns <ip_addres_of_DC> -c all 
