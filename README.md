@@ -562,43 +562,64 @@ you can also crack hashes. You need NT portion of the hash when you wanna crack 
 impacket-GetUserSPNs FKEYS.local/bjames:Password! -dc-ip 192.168.182.139 -request
 ```
   <img width="895" height="374" alt="image" src="https://github.com/user-attachments/assets/ccb90c8e-47b1-4f5e-8e06-12909809244c" />
-we can the crack the ticket using hashcat
+- We can then crack the ticket using hashcat
+```bash
 hashcat -m 13100 krb.txt /usr/share/wordlists/rockyou.txt
+```
+## Mitigation strategies for kerberoasting attacks
+- 1. Strong Passwords
+- 2. Least privilege
 
-mitigation strategies for kerberoasting attacks
-1. Strong Passwords
-2. Least privilege
+# c. Token Impersonation Attacks (README.md)
 
-c. Token Impersonation attacks
-What are tokens?
+## What is a token? (simple)
+A **token** is a temporary authorization object the OS issues after a successful login. It proves a user’s identity to the system so processes can access resources without re-sending passwords — think of tokens like session cookies for Windows authentication.
 
-• Temporary keys that allow you access to a system/network without having to provide credentials each time you access a file.
-Think cookies for computers.
-Two types:
+## Common token types
+- **Delegation token** — created for interactive logons or Remote Desktop sessions; can be forwarded to other services.  
+- **Impersonation token** — typically used for non-interactive operations (attaching network drives, running a logon script, servicing requests) and allows a process to act as a user on that machine.
 
-• Delegate - Created for logging into a machine or using Remote Desktop
-• Impersonate - "non-interactive" such as attaching a network drive or a domain logon script
+---
 
-To perform the Token impersonation attack, we can make use of metasploit
-first, we gain a shell (meterpreter shell), from the compromised credentials.
-after we gain the meterpreter shell, we then load up the incognito extension. 
+## What is a Token Impersonation attack (one line)
+An attacker who controls a process on a host can steal or impersonate a user token to perform actions as that user — often to access network resources or escalate privileges on other systems.
+
+---
+
+## High-level attack flow (safe, conceptual)
+1. **Gain a shell** on a host (e.g., via a compromised account and a Meterpreter session).  
+2. **Dump or list tokens** available to the process (tokens from logged-on users, services, or active sessions).  
+3. **Duplicate / impersonate** a token for a higher-privilege user (for example, a local admin or a service account) and run commands or access network resources as that user.  
+4. **Access resources** that the impersonated identity can reach (file shares, services, remote machines) without needing the user’s plaintext password.
+
+---
+
+## Typical tooling & commands (Meterpreter / `incognito`) — conceptual
+> **Note:** exact meterpreter commands vary by version. Always check `help` in your session.
+
+- In a Meterpreter session:
+  ```text
+  meterpreter> load incognito
+  meterpreter> list_tokens -u          # list available tokens (user tokens)
+  meterpreter> impersonate_token 'TOKEN'  # impersonate a listed token
+  meterpreter> getsystem               # (optional) attempt elevation via known techniques
+``
    <img width="894" height="205" alt="image" src="https://github.com/user-attachments/assets/f7a75f5e-ae70-4aed-89a8-3ae89d62f7a8" />
 
-we can list tokens with the command: list_tokens -u
+- We can list tokens with the command: `list_tokens -u`
 
    <img width="474" height="182" alt="image" src="https://github.com/user-attachments/assets/0997b78d-99ed-4c5c-8373-f01d4aca3499" />
 
-To impersonate the user or accoount we see when we run the list_token command,
-we can run the command: impersonate_token domain\\user
+- To impersonate the user or accoount we see when we run the `list_token -u` command,
+- we can run the command: `impersonate_token domain\\user`
    <img width="380" height="52" alt="image" src="https://github.com/user-attachments/assets/41cc23c5-091b-44a8-a661-0c2e31613e39" />
-   Now, we have successfully impersonated the user
+  
+- If an admin user also logins into the machine we impersonated,  we will also be able to impersonate the admin user
 
-if an admin user also logins into the machine we impersonated,  we will also be able to impersonate the admin user
+<img width="473" height="504" alt="image" src="https://github.com/user-attachments/assets/517c02fd-fb38-47d5-91c4-64c94315c96a" />
 
-   <img width="473" height="504" alt="image" src="https://github.com/user-attachments/assets/517c02fd-fb38-47d5-91c4-64c94315c96a" />
-   Here we have successfully impersonate the admin
 
-we can take it a step further to add a new user into the domain admin group as seen in the picture below:
+- we can take it a step further to add a new user into the domain admin group as seen in the picture below:
 
    <img width="684" height="206" alt="image" src="https://github.com/user-attachments/assets/abc32356-8326-41e7-aed7-cc93b42f4fd5" />
 
