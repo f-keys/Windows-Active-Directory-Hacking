@@ -612,7 +612,8 @@ An attacker who controls a process on a host can steal or impersonate a user tok
 
 - To impersonate the user or accoount we see when we run the `list_token -u` command,
 - we can run the command: `impersonate_token domain\\user`
-   <img width="380" height="52" alt="image" src="https://github.com/user-attachments/assets/41cc23c5-091b-44a8-a661-0c2e31613e39" />
+- 
+<img width="380" height="52" alt="image" src="https://github.com/user-attachments/assets/41cc23c5-091b-44a8-a661-0c2e31613e39" />
   
 - If an admin user also logins into the machine we impersonated,  we will also be able to impersonate the admin user
 
