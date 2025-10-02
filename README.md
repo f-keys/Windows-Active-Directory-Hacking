@@ -67,9 +67,6 @@ Concise, lab-oriented notes about offensive techniques against Windows Active Di
 
 ---
 
-## Limitations
-- The attacker does **not** get the plaintext password directly.  
-- Value depends on environment (e.g., if SMB signing, Kerberos-only auth, or PAM are enforced).  
 
 ---
 
@@ -83,11 +80,10 @@ Concise, lab-oriented notes about offensive techniques against Windows Active Di
 ---
 
 
-- **Tool (example):**
+- **Walkthrough**
 
-  ## run responder on attacker machine (interface eth0)
-sudo responder -I eth0 -ldwPv
-simulate an event occuring. on victim system- 
+ Run `sudo responder -I eth0 -ldwPv`. Here, Responder run on the eth0 interface and (based on the flags used) will: bind to that interface, enable several responder modules (including WPAD), run in verbose mode, and log/capture authentication attempts (NTLM hashes) from hosts on the network. Responder will reply to name-resolution broadcasts (LLMNR/NetBIOS/mDNS) and serve rogue HTTP/SMB/etc. endpoints to collect credentials on the attacker machine. Then on the victim system, we can simulate an event occuring to capture the hash.
+ 
 The hash of the victim is them capture on responder
 
 
