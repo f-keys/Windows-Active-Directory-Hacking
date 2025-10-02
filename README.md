@@ -286,9 +286,6 @@ also make sure to install Active directory certificate services for other attack
 
 
 
-
-
-
 Different ways of gaining shell access
 1. Throught metaspolit. There is a module called psexec
 This is very noisy and can get picked up in live environment
