@@ -533,9 +533,9 @@ you can also crack hashes. You need NT portion of the hash when you wanna crack 
 - Automatically rotate passwords on check out and check
 - Limits pass attacks as hash/password is strong and constantly rotated
 
-# b. Kerberoasting (easy README explanation)
+# b. Kerberoasting
 
-## Short summary  
+##  summary  
 **Kerberoasting** abuses service accounts that have Service Principal Names (SPNs) registered in Active Directory. An attacker with any domain user credential can request a service ticket (TGS) for those SPNs, then extract the ticket and crack it offline to recover the service account’s plaintext password — potentially yielding a high-privilege credential.
   
 ---
@@ -548,7 +548,7 @@ you can also crack hashes. You need NT portion of the hash when you wanna crack 
 
 ---
 
-## Typical attack flow (simple)
+## Typical attack flow
 1. Attacker has a valid domain user account (no special privileges required).  
 2. Attacker queries AD for accounts with SPNs (service accounts).  
 3. For each SPN, attacker requests a Kerberos **service ticket (TGS)**.  
@@ -664,7 +664,35 @@ netexec smb <domain_IP> -d domain.local -u user -p Password -M slinky -o NAME=te
 
 
 
-e. GPP attacks AKA  cPassword attacks (explain that it mean)
+# e. GPP Attacks (aka cPassword attacks)
+
+## Short summary  
+**GPP (Group Policy Preferences) cPassword attack** abuses stored credentials in Group Policy Preference XML files. Administrators sometimes used GPP to push local account passwords, scheduled-task passwords, or service-account credentials. Those values were encrypted with a **publicly-known** key, so an attacker who can read SYSVOL (or a GPO backup) can decrypt the `cPassword` value and recover plaintext credentials.
+
+---
+
+## What `cPassword` means
+- `cPassword` is an XML field used by Group Policy Preferences to store a credential (for example: a local account password) that the client will apply.  
+- Although the value is encrypted in the file, Microsoft used a **single, documented key** to encrypt/decrypt these values — making it trivial for anyone with read access to the GPO files to recover the plaintext password.
+
+---
+
+## High-level attack flow
+1. Attacker gains read access to `\\<domain>\SYSVOL` (common after initial foothold or from a compromised host).  
+2. Attacker searches GPO XML files for `cPassword` entries (e.g., `Groups.xml`, `Services.xml`, `ScheduledTasks.xml`, `Printers.xml`).  
+3. Attacker decrypts the `cPassword` values (tools and scripts exist to do this quickly).  
+4. With recovered plaintext passwords (often local admin or service-account creds), attacker can move laterally, obtain privileged access, or escalate further.
+
+---
+
+## Why it was effective
+- Many organisations used GPP to set identical local admin passwords across multiple hosts for convenience.  
+- The encryption key was public/known — not a per-domain secret — so any readable copy of the GPOs exposed secrets.  
+- The GPO files live in SYSVOL and are readable by authenticated domain users by default.
+
+---
+
+
 
 Post Compromise attack strategy
  we have an account, now what?
