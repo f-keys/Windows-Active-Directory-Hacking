@@ -519,19 +519,19 @@ impacket-secretdump administrator:@<ip_address> -hashes shjdfjhjsdfjksf
 - 6. Reuse captured local admin hashes (pass-the-hash) across other machines — pivot and escalate.
 you can also crack hashes. You need NT portion of the hash when you wanna crack the hash. 
 
-Pass the hash / Pass the password Mitigation
- Limit account re-use:
-• Avoid re-using local admin password
-• Disable Guest and Administrator accounts
-• Limit who is a local administrator (least privilege)
-• Utilize strong passwords:
-• The longer the better (>14 characters)
-• Avoid using common words
-• I like long sentences
-• Privilege Access Management (PAM):
-• Check out/in sensitive accounts when needed
-• Automatically rotate passwords on check out and check
-• Limits pass attacks as hash/password is strong and constantly rotated
+#### Pass the hash / Pass the password Mitigation
+- Limit account re-use:
+- Avoid re-using local admin password
+- Disable Guest and Administrator accounts
+- Limit who is a local administrator (least privilege)
+- Utilize strong passwords:
+- The longer the better (>14 characters)
+- Avoid using common words
+- I like long sentences
+- Privilege Access Management (PAM):
+- Check out/in sensitive accounts when needed
+- Automatically rotate passwords on check out and check
+- Limits pass attacks as hash/password is strong and constantly rotated
 
 b. Kerberoasting attacks
 This attack takes advantage of service accounts(explain better)
