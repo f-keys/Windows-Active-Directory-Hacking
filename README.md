@@ -329,7 +329,27 @@ Because of these actions, `psexec` is commonly detected quickly in live environm
 - Set the rhosts, SMBDomain, SMBPass, & SMBUser with the information gotten from earlier atttacks
 <img width="877" height="171" alt="image" src="https://github.com/user-attachments/assets/c0ce4592-70f3-41f4-a89e-4838116233f3" />
 
-1b. you can also use the sam hash that was gotten from ntlmrelay.py to gain shell. Here, you are gaining shell as in administrator. To do this, You meed to set the SMBUser to administrator. you can also remove the SMBDomain that was previously set as it is not needed. we are loggin locally as in admin. Then finally set eh SMBPass withe the admin sam hashes
+## 1b — Using a captured SAM/NTLM hash to get a shell (conceptual)
+
+### What this is (one line)
+Using a captured SAM/NTLM hash means authenticating to a Windows host **without knowing the plaintext password** by presenting the hash where the service accepts NTLM authentication. If the hash belongs to a local administrator account, this can result in an administrative shell on the target.
+
+---
+
+### High-level idea (how it works)
+- An attacker captures an NTLM/SAM hash (for example, during an NTLM relay or other capture).  
+- Instead of cracking the hash, the attacker supplies it directly to an SMB-based authentication routine that accepts NTLM hashed credentials.  
+- If the supplied hash matches a local administrator account on the target, the authentication succeeds and the attacker can run commands / obtain an interactive shell as that admin.
+
+---
+
+### Typical configuration notes
+- **SMBUser** — set this to the username you intend to authenticate as (e.g., `Administrator`) so the SMB client attempts login as that account.  
+- **SMBDomain** — for local logins you often remove or ignore the domain value (you’re authenticating to the local SAM on the host, not an AD domain account), so the domain field is not required.  
+- **SMBPass** — instead of a plaintext password, provide the captured NTLM/LM hash value (the “NT hash” or combined LM:NT format depending on tool expectations). The tool then presents the hash during NTLM auth.
+
+> Note: flags/naming vary between tools. The above are common conceptual fields — consult your chosen tool’s help in a lab to see how it expects hashed credentials.
+
 <img width="917" height="201" alt="image" src="https://github.com/user-attachments/assets/781b0459-7d41-409b-a135-9d77cc64f8a3" />
 
 
