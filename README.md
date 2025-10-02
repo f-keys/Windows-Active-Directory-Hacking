@@ -381,12 +381,26 @@ ldapdomaindump ldaps://<DC_IP> -u 'DOMAIN\User' -p 'Password'
 ---
    <img width="808" height="276" alt="image" src="https://github.com/user-attachments/assets/f0f4b791-de66-4f0c-a59a-4b1aaceb7e10" />
 
-B. Domain Enumneration with Bloodhound
-to run an injester i.e so that we will be able to use the output and load it up on the bloodhound application, you can use the command:
-   bloodhound-python -d <domain> -u <user> -p <password> -ns <ip_addres_of_DC> -c all 
+## B. Domain Enumeration with BloodHound
+
+**Purpose**  
+Use BloodHound to map Active Directory relationships (users, groups, sessions, trusts, ACLs) and find privilege-escalation and lateral-movement paths. The usual workflow is: collect data from the domain with an ingestor, export JSON files, then load those files into the BloodHound GUI for interactive analysis.
+
+---
+
+### Collector (ingestor) — `bloodhound-python` example command
+```bash
+bloodhound-python -d <DOMAIN> -u <USER> -p '<PASSWORD>' -ns <DC_IP> -c all
+```
    <img width="719" height="345" alt="image" src="https://github.com/user-attachments/assets/f71c1910-d78a-463b-b9c2-3fdb22b8b543" />
    <img width="691" height="88" alt="image" src="https://github.com/user-attachments/assets/6d3794d4-daa1-4d21-b394-6e1292869af9" />
- we can upload the json files into bloodhound for a more interactive analysis
+### How to use the results
+
+- Open the BloodHound GUI.
+
+- Upload the generated JSON files (drag/drop or via the upload dialog).
+
+- Use BloodHound queries and built-in path-finding to discover shortest escalation paths (e.g., “Find shortest path to Domain Admins”) and identify risky relationships.
     <img width="1906" height="889" alt="image" src="https://github.com/user-attachments/assets/9d1d6714-08d0-43c1-bcf6-d5538269c77c" />
 
 
