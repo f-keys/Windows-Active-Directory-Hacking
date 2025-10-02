@@ -23,8 +23,6 @@
   - [LNK file attacks](#lnk-file-attacks)
   - [GPP / cPassword](#gpp--cpassword)
 - [Domain compromise: NTDS & Golden Tickets](#domain-compromise-ntds--golden-tickets)
-- [Mitigations summary](#mitigations-summary)
-- [Responsible use & license](#responsible-use--license)
 
 ---
 
