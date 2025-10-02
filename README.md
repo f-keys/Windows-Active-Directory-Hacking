@@ -225,7 +225,7 @@ A *pass-back* attack against a Multi-Function Printer (MFP) is when an attacker 
 
 ---
 
-## Why it works (simple)
+## Why it works
 - Many MFPs perform automatic authentication to the servers configured in their settings.  
 - Admin interfaces are sometimes left with default credentials or exposed to users.  
 - If the configured server is changed to an attacker host, the device (or users at the device) will authenticate to the attacker.
@@ -294,7 +294,7 @@ The Metasploit `psexec` module uses valid Windows credentials to create a servic
 
 ---
 
-### How it works (short)
+### How it works
 1. Attacker provides admin credentials for the target.  
 2. Metasploit connects over SMB (`TCP/445`), uploads an executable to the target (often via `\\<target>\ADMIN$`), and creates a Windows service that runs that executable.  
 3. The service starts the payload, which opens a session back to the attacker (reverse shell) or spawns an interactive session.
@@ -310,7 +310,7 @@ Because of these actions, `psexec` is commonly detected quickly in live environm
 ---
 
 ### Quieter alternatives (lower footprint, still detectable)
-- `wmiexec` / `smbexec` — authenticated remote command execution without creating a service (less disk footprint).  
+- `wmiexec` / `smbexec` `crackmapexec`— authenticated remote command execution without creating a service (less disk footprint).  
 - PowerShell Remoting (WinRM) — can look more legitimate if allowed by policy.  
 - `schtasks` remote task — schedules a task instead of creating a service (auditable).  
 - In-memory payloads (PowerShell one-liners, reflective loaders) — avoid writing executables to disk (EDR may still catch them).  
@@ -329,9 +329,9 @@ Because of these actions, `psexec` is commonly detected quickly in live environm
 - Set the rhosts, SMBDomain, SMBPass, & SMBUser with the information gotten from earlier atttacks
 <img width="877" height="171" alt="image" src="https://github.com/user-attachments/assets/c0ce4592-70f3-41f4-a89e-4838116233f3" />
 
-## 1b — Using a captured SAM/NTLM hash to get a shell (conceptual)
+## 1b — Using a captured SAM/NTLM hash to get a shell
 
-### What this is (one line)
+### What this is 
 Using a captured SAM/NTLM hash means authenticating to a Windows host **without knowing the plaintext password** by presenting the hash where the service accepts NTLM authentication. If the hash belongs to a local administrator account, this can result in an administrative shell on the target.
 
 ---
@@ -354,30 +354,29 @@ Using a captured SAM/NTLM hash means authenticating to a Windows host **without 
 
 
 
-2. The use of psexec.py tool
+## 2 — The use of psexec.py tool
    psexec.py DOMAIN/user:@ip-address
 <img width="577" height="262" alt="image" src="https://github.com/user-attachments/assets/378a98e9-2e49-4356-b36b-85bbf91b355a" />
 
 <img width="1004" height="255" alt="image" src="https://github.com/user-attachments/assets/d8bb87ce-031d-4c61-900b-93febda1acb3" />
 
-3. IPV6 Attacks (DNS takeover Via IPV6)
- 
-Mitigation strategies for IPV6 attacks
-IPv6 poisoning abuses the fact that Windows queries for an IPv6 address even in IPv4-only environments. If you do not use IPv6 internally, the safest way to prevent mitm6 is to block DHCPv6 traffic and incoming router advertisements in Windows Firewall via Group Policy. Disabling IPv6 entirely may have unwanted side effects. Setting the following predefined rules to Block instead of Allow prevents the attack from working:
-(Inbound) Core Networking - Dynamic Host Configuration Protocol for IPv6(DHCPV6-In)
-• (Inbound) Core Networking - Router Advertisement (ICMPv6-In)
-(Outbound) Core Networking - Dynamic Host Configuration
-Protocol for IPv6(DHCPV6- Out)
-If WAD is not in use internally, disable it via Group Policy and by disabling the WinHttpAutoProxySvc service.
-Relaying to LDAP and LDAPS can only be mitigated by enabling both LDAP signing and LDAP channel binding.
-Consider Administrative users to the Protected Users group or marking them as Account is sensitive and cannot be delegated, which will prevent any impersonation of that user via delegation.
 
-4. Passback attacks
 
-POST-COMPROMISE ACTIVE DIRECTORY ENUMERATION(WHAT HAPPENS AFTER GETTING A VALID ACCOUNT)
-we enumeratee
+# Post-Compromise Active Directory Enumeration  
+*(What happens after obtaining a valid account )*
 
-A. Domain Enumeration with ldapdomaindump
+After an attacker obtains a valid domain account they will typically enumerate Active Directory to discover users, groups, computers, GPOs and trusts that enable privilege escalation and lateral movement. One common first step is domain enumeration via LDAP/LDAPS.
+
+---
+
+## A. Domain enumeration with `ldapdomaindump`
+
+### Purpose  
+`ldapdomaindump` extracts AD objects (users, groups, computers, OUs, GPOs, trusts, ACLs, etc.) via LDAP/LDAPS to build a map of the environment and find escalation paths.
+
+### Example command
+```bash
+ldapdomaindump ldaps://<DC_IP> -u 'DOMAIN\User' -p 'Password'
    <img width="808" height="276" alt="image" src="https://github.com/user-attachments/assets/f0f4b791-de66-4f0c-a59a-4b1aaceb7e10" />
 command: ldapdomaindump ldaps://ip_addresof_DC -u 'Domanin\User' -p 'passwd'
 B. Domain Enumneration with Bloodhound
