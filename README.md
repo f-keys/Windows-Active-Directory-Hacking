@@ -377,6 +377,8 @@ After an attacker obtains a valid domain account they will typically enumerate A
 ### Example command
 ```bash
 ldapdomaindump ldaps://<DC_IP> -u 'DOMAIN\User' -p 'Password'
+
+---
    <img width="808" height="276" alt="image" src="https://github.com/user-attachments/assets/f0f4b791-de66-4f0c-a59a-4b1aaceb7e10" />
 command: ldapdomaindump ldaps://ip_addresof_DC -u 'Domanin\User' -p 'passwd'
 B. Domain Enumneration with Bloodhound
