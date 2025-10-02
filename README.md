@@ -533,14 +533,35 @@ you can also crack hashes. You need NT portion of the hash when you wanna crack 
 - Automatically rotate passwords on check out and check
 - Limits pass attacks as hash/password is strong and constantly rotated
 
-b. Kerberoasting attacks
-This attack takes advantage of service accounts(explain better)
-   <img width="962" height="668" alt="image" src="https://github.com/user-attachments/assets/2245384c-ca81-4237-a8b7-64bc1082709a" />
-Tool used: GetuserSPNS
-cmd: impacket-GetUserSPNs FKEYS.local/bjames:Password! -dc-ip 192.168.182.139 -request
-the command above requests for a ticket granting ticket(tgt). Just think of it this way, if you have if a compromised domain credential, you can request for a ticket granting ticket
-   <img width="895" height="374" alt="image" src="https://github.com/user-attachments/assets/ccb90c8e-47b1-4f5e-8e06-12909809244c" />
+# b. Kerberoasting (easy README explanation)
 
+## Short summary  
+**Kerberoasting** abuses service accounts that have Service Principal Names (SPNs) registered in Active Directory. An attacker with any domain user credential can request a service ticket (TGS) for those SPNs, then extract the ticket and crack it offline to recover the service account’s plaintext password — potentially yielding a high-privilege credential.
+  
+---
+<img width="962" height="668" alt="image" src="https://github.com/user-attachments/assets/2245384c-ca81-4237-a8b7-64bc1082709a" />
+
+## Why service accounts matter
+- Service accounts often run services (IIS, SQL, web apps) and have SPNs registered so clients can obtain Kerberos tickets for those services.  
+- These accounts frequently have long-lived, reusable credentials and sometimes weak passwords.  
+- Because Kerberos service tickets are encrypted with the service account’s NT hash (or key), an attacker who captures a TGS can attempt to brute-force/crack the ticket offline to recover the service account password.
+
+---
+
+## Typical attack flow (simple)
+1. Attacker has a valid domain user account (no special privileges required).  
+2. Attacker queries AD for accounts with SPNs (service accounts).  
+3. For each SPN, attacker requests a Kerberos **service ticket (TGS)**.  
+4. Attacker saves the encrypted ticket material and runs an offline cracker (e.g., Hashcat/John) against the ticket to recover the plaintext password for the service account.  
+5. If cracked and the account has privileges, attacker can use it for lateral movement/privilege escalation.
+
+---
+
+## Tool example — `GetUserSPNs` (Impacket)
+```bash
+impacket-GetUserSPNs FKEYS.local/bjames:Password! -dc-ip 192.168.182.139 -request
+```
+  <img width="895" height="374" alt="image" src="https://github.com/user-attachments/assets/ccb90c8e-47b1-4f5e-8e06-12909809244c" />
 we can the crack the ticket using hashcat
 hashcat -m 13100 krb.txt /usr/share/wordlists/rockyou.txt
 
