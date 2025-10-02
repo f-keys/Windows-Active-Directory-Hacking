@@ -159,10 +159,10 @@ before you run the previous command, run this command on your other terminal:
 
 - Then we wait for an event to happen. but for simulation purpose, we can trigger a restart event from the machine on the network. as soon as we restart the a machine on the network, ntlmrelayx captures it.
 <img width="629" height="93" alt="image" src="https://github.com/user-attachments/assets/485e615d-17d3-4e3d-a86a-505294d81e7a" />
-On navigating to "lootbox" folder created, we get alot more information. This is possible because of ldapdomain dump
+- On navigating to "lootbox" folder created, we get alot more information. This is possible because of ldapdomain dump that comes embedded with ntlmrelayx
 <img width="1071" height="380" alt="image" src="https://github.com/user-attachments/assets/be47416c-929a-4f16-bf71-11ae86868a9e" />
 
-But to take things further, if a domain admin user logins, ntlmrelayx will also capture it. 
+- But to take things further, if a domain admin user logins, ntlmrelayx will also capture it. 
 <img width="647" height="389" alt="image" src="https://github.com/user-attachments/assets/943f410c-e694-4859-a094-97b03d4f101a" />
 ntlmrelayx then creates a new user. 
 
