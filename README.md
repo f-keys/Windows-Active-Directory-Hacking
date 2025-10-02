@@ -272,7 +272,9 @@ A *pass-back* attack against a Multi-Function Printer (MFP) is when an attacker 
   - Control physical access to devices and keep an accurate inventory of MFPs and their locations.
 
 ---
-
+### Different ways of gaining shell access
+- 1a Throught metaspolit. There is a module called psexec. The Metasploit psexec module uses valid Windows credentials to create a service on a remote host and run a payload, giving you an interactive shell (or meterpreter) on that machine.
+This is very noisy and can get picked up in live environment
 # Windows-Active-Directory-Hacking
 The repo contains information on how to hack a windows active directory. REFERENCE: TCM ACADEMY
 Active Directory Overview
@@ -285,13 +287,46 @@ promote the windows server to a domain controller by installing,  Active Directo
 also make sure to install Active directory certificate services for other attacks that will considered for other attacks later
 
 
+## 1a — Via Metasploit `psexec`
 
-Different ways of gaining shell access
-1. Throught metaspolit. There is a module called psexec
-This is very noisy and can get picked up in live environment
+### What it is
+The Metasploit `psexec` module uses valid Windows credentials to create a service on a remote host and run a payload, giving an interactive shell (or Meterpreter session) on that machine.
+
+---
+
+### How it works (short)
+1. Attacker provides admin credentials for the target.  
+2. Metasploit connects over SMB (`TCP/445`), uploads an executable to the target (often via `\\<target>\ADMIN$`), and creates a Windows service that runs that executable.  
+3. The service starts the payload, which opens a session back to the attacker (reverse shell) or spawns an interactive session.
+
+---
+
+### Why it’s noisy
+- **Writes files to disk** (uploaded binary) — forensic artefacts remain.  
+- **Creates and starts a Windows service** — Service Control Manager logs this.  
+- **Generates SMB authentication and file-activity events** — easily visible to logging/EDR.  
+Because of these actions, `psexec` is commonly detected quickly in live environments.
+
+---
+
+### Quieter alternatives (lower footprint, still detectable)
+- `wmiexec` / `smbexec` — authenticated remote command execution without creating a service (less disk footprint).  
+- PowerShell Remoting (WinRM) — can look more legitimate if allowed by policy.  
+- `schtasks` remote task — schedules a task instead of creating a service (auditable).  
+- In-memory payloads (PowerShell one-liners, reflective loaders) — avoid writing executables to disk (EDR may still catch them).  
+- Ticket-based / credential reuse techniques (Kerberos golden tickets, Pass-the-Hash) — avoid file/service activity but have other prerequisites.
+
+---
+
+### Detection signals (what defenders see)
+- New service creation events in System / Service Control Manager logs.  
+- Unexpected executable or file writes in `C:\Windows\Temp`, `C:\Windows\System32`, or `ADMIN$` shares.  
+- SMB authentication from unusual hosts or unexpected admin-auth patterns.  
+- EDR alerts for known Meterpreter behaviour or suspicious parent/child process chains (e.g., `services.exe` launching a shell).
+
+
 <img width="1064" height="559" alt="image" src="https://github.com/user-attachments/assets/9c2df193-83b6-4d08-808d-0a5a9a93cfc6" />
-Set the rhosts, SMBDomain, SMBPass, & SMBUser with the information gotten from earlier atttacks
-We have gotten a shell
+- Set the rhosts, SMBDomain, SMBPass, & SMBUser with the information gotten from earlier atttacks
 <img width="877" height="171" alt="image" src="https://github.com/user-attachments/assets/c0ce4592-70f3-41f4-a89e-4838116233f3" />
 
 1b. you can also use the sam hash that was gotten from ntlmrelay.py to gain shell. Here, you are gaining shell as in administrator. To do this, You meed to set the SMBUser to administrator. you can also remove the SMBDomain that was previously set as it is not needed. we are loggin locally as in admin. Then finally set eh SMBPass withe the admin sam hashes
