@@ -152,10 +152,10 @@ before you run the previous command, run this command on your other terminal:
 
 `ntlmrelayx.py -6 -t ldaps://IP_address_of_DC -wh anything.fkeys.local -l lootbox`
 **What the command does**
-`-6` — operate using IPv6 (listen for and handle IPv6-based auth attempts).
-`-t ldaps://IP_address_of_DC` — relay captured authentication attempts to the Domain Controller over LDAPS (secure LDAP) at that IP. In other words: when a client authenticates to the attacker, ntlmrelayx will immediately try the same credentials against the specified LDAPS service on the DC.
-`-wh anything.fkeys.local` — serves a WPAD file that sets the proxy to anything.fkeys.local, causing clients that request wpad.dat to try authenticating to that host.
-`-l lootbox` — store logs/output (captured sessions, shells, or files) in the lootbox folder so you can examine results later.
+- `-6` — operate using IPv6 (listen for and handle IPv6-based auth attempts).
+- `-t ldaps://IP_address_of_DC` — relay captured authentication attempts to the Domain Controller over LDAPS (secure LDAP) at that IP. In other words: when a client authenticates to the attacker, ntlmrelayx will immediately try the same credentials against the specified LDAPS service on the DC.
+- `-wh anything.fkeys.local` — serves a WPAD file that sets the proxy to anything.fkeys.local, causing clients that request wpad.dat to try authenticating to that host.
+- `-l lootbox` — store logs/output (captured sessions, shells, or files) in the lootbox folder so you can examine results later.
 
 - Then we wait for an event to happen. but for simulation purpose, we can trigger a restart event from the machine on the network. as soon as we restart the a machine on the network, ntlmrelayx captures it.
 <img width="629" height="93" alt="image" src="https://github.com/user-attachments/assets/485e615d-17d3-4e3d-a86a-505294d81e7a" />
