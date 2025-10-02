@@ -79,8 +79,7 @@ Concise, lab-oriented notes about offensive techniques against Windows Active Di
 
 ---
 
-
-- **Walkthrough**
+## Walkthrough
 
  Run `sudo responder -I eth0 -ldwPv`. Here, Responder runs on the eth0 interface and (based on the flags used) will: bind to that interface, enable several responder modules (including WPAD), run in verbose mode, and log/capture authentication attempts (NTLM hashes) from hosts on the network. Responder will reply to name-resolution broadcasts (LLMNR/NetBIOS/mDNS) and serve rogue HTTP/SMB/etc. endpoints to collect credentials on the attacker machine. Then on the victim system, we can simulate an event occuring to capture the hash.
  
@@ -93,6 +92,7 @@ We can then crack the Hash using hashcat. `hashcash -m 5600 hashes.txt /path/to/
 
 <img width="1877" height="390" alt="image" src="https://github.com/user-attachments/assets/da11dacb-30ec-435e-963f-008ea1ae7db7" />
 
+### SMB Relay Attacks
 # listen with responder
 sudo responder -I eth0 -ldwPv
 
@@ -111,21 +111,6 @@ Make sure you rename the windows server (in my case, UNCLE-DC)
 promote the windows server to a domain controller by installing,  Active Directory Domain Services from the server manager, you can name your forest as anything but in my case i named it FKEYS.local
 also make sure to install Active directory certificate services for other attacks that will considered for other attacks later
 
-Attacking Active Directory: Initial Attack Vectors
-1. LLMNR Poisoning (description in simple terms, what makes the attack possbible?)
-
-Sudo responder -I eth0 -ldwPv
-simulate an event occuring. on victim system- 
-The hash of the victim is them capture on responder
-
-
-
-To crack the hash, run the command, 
-hashcash -m 5600 hashes.txt /path/to/wordlist/ 
-
-LLMNR Mitigation
-turn off LLMNR
-if LLMNR is needed. It should have strong access control(password)
 
 2. SMB Relay attacks
 instead of capturing the hash with the responder tool, we can relay the hash via smb and gain access to a machine
