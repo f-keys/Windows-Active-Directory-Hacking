@@ -691,34 +691,77 @@ netexec smb <domain_IP> -d domain.local -u user -p Password -M slinky -o NAME=te
 - The GPO files live in SYSVOL and are readable by authenticated domain users by default.
 
 ---
+# Post-Compromise Attack Strategy — "We have an account, now what?"
 
+When you already have a valid account inside a domain, the goal is to convert that foothold into higher value access while balancing speed, stealth, and impact. Below is a concise playbook you can use in a lab or authorised engagement.
 
+---
 
-Post Compromise attack strategy
- we have an account, now what?
- * search the quick wins
-   Kerberoasting
-   secretdump
-   pass the hash/pass the password
-* No quick wins Dig deep!
-     Enumerate( Bloodhound,)
-     where does your account have access
-     check for old vulnerabilities
-* Think outside the box
+## 1. Quick wins (fast, high-value checks)
+Start here to get immediate leverage and to discover easy escalation paths.
 
-We hvae compromised the Domain controller, now what is next??
-WE OWN THE DOMAIN
-NOW WHAT?
-Preide as much value to the client as possible
-Put your blinders on and do it again
-Dump the NTDS.dit and crack passwords
-• Enumerate shares for sensitive information
-Persistence can be important
-• What happens if our DA access is lost?
-• Creating a DA account can be useful
-(DO NOT FORGET TO DELETE IT)
-• Creating a Golden Ticket can be useful, too.
-Do a little dance, probably
+- **Kerberoasting** — query SPNs and request service tickets, then crack them offline to recover service account passwords.  
+- **SecretsDump** — use `impacket-secretsdump` on accessible hosts to extract SAM/LSA/ cached creds and service secrets.  
+- **Pass-the-Hash / Pass-the-Password** — try harvested plaintext or NT hashes across hosts (SMB/WinRM/RDP) to gain lateral access.  
+- **Credential spraying** — test cracked or guessed credentials quickly against many hosts to find re-used accounts.
+
+---
+
+## 2. If no quick wins — dig deeper
+Do thorough enumeration to find less obvious paths.
+
+- **Enumerate broadly** (BloodHound/PlumHound/Bloodhound-python) to map access paths, nested groups, delegated rights and sessions.  
+- **Map where your account has access** — which hosts, services, shares, and ACLs can your account reach or influence?  
+- **Look for old/vulnerable systems** — unpatched servers, exposed admin tools, unconstrained delegation, misconfigured GPOs.  
+- **Review service accounts & SPNs** — service accounts often have high value and weak passwords.
+
+---
+
+## 3. Think outside the box
+Don’t only follow the checklist — consider non-standard escalation vectors.
+
+- Abuse poorly protected internal web apps, backup systems, MFPs, or service integrations.  
+- Check configuration management/backup repositories, Git repos, or stored credentials in config files.  
+- Inspect scheduled tasks, automation systems, CI/CD secrets, cloud sync services and delegated trusts.
+
+---
+
+## We’ve compromised the Domain Controller — now what?
+*(You own the domain — next steps to maximise value for the client in a controlled engagement.)*
+
+> **High-level goal:** provide maximum actionable value to the client while maintaining an ethical, reversible posture.
+
+### Immediate actions
+- **Snapshot evidence & document everything** — collect logs, command history, and a clear timeline for reporting.  
+- **Dump NTDS.dit (safely)** — extract domain hashes (only in authorised tests); plan offline cracking to reveal password reuse and weak credentials.  
+- **Enumerate sensitive shares and data** — look for secrets, backups, credentials, or business-critical data to prioritise remediation recommendations.  
+- **Assess blast radius** — list high-impact accounts, services, and systems accessible from the DC.
+
+### Persistence (only if in scope & documented)
+- Consider persistence options **only if explicitly permitted** in scope and with clear remediation steps:  
+  - Temporary administrative accounts (create carefully, document, and remove before exit).  
+  - Golden Ticket creation (powerful; only with client approval and clear cleanup steps).  
+  - Service account modifications (use minimal footprint and provide remediation).
+
+> **Important:** If you create any persistence accounts, **document them and delete them before finishing the engagement** unless the client requests retained backdoors for remediation testing.
+
+### Post-exploitation hardening recommendations to deliver
+- **Rotate all domain-level and service credentials** exposed during the test (NTDS-derived, GPP cPassword, service accounts).  
+- **Harden delegation and Kerberos settings**, enforce LDAP/LDAPs signing & channel binding, enforce SMB signing.  
+- **Enforce unique local admin passwords** (LAPS) and remove credential reuse.  
+- **Audit and restrict SYSVOL/ GPO access**, remove `cPassword` entries.  
+- **Monitor and alert** on abnormal DC activity, large LDAP dumps, NTDS access, unexpected LDAPS binds, and ticket/TGS spikes.
+
+---
+
+## Final notes — reporting & client value
+- **Provide prioritized remediation**: quick fixes (rotate creds, enable signing), medium (segment networks, block SMB egress), long-term (MFA for admin ops, JIT/JEA, Credential Guard).  
+- **Deliver an actionable remediation plan** with exact steps, affected assets, and suggested timeline.  
+- **Be repeatable:** after remediation, re-run checks to validate fixes — "put your blinders on and do it again."  
+- **Leave evidence & playbook** so the client can reproduce findings and verify remediations.
+
+---
+
 
 a. Dumping the NTDS.dit
 it is a database used to store Active directory data. This data includes: user info, group information, security descriptors, password hashes
