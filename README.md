@@ -67,9 +67,6 @@ Concise, lab-oriented notes about offensive techniques against Windows Active Di
 
 ---
 
-
----
-
 ## Defenses
 - Disable **LLMNR** (Via Group Policy) and **NetBIOS** if not needed.  
 - Reduce or block **NTLM** usage; prefer **Kerberos**.  
@@ -93,6 +90,14 @@ We can then crack the Hash using hashcat. `hashcash -m 5600 hashes.txt /path/to/
 <img width="1877" height="390" alt="image" src="https://github.com/user-attachments/assets/da11dacb-30ec-435e-963f-008ea1ae7db7" />
 
 ### SMB Relay Attacks
+
+- Instead of capturing the hash with the responder tool, we can relay the hash via smb and gain access to a machine.An SMB relay attack lets an attacker take an authentication attempt from one machine and forward (relay) it to another machine. If the forwarded credentials are accepted, the attacker can act as that user on the second machine — often without ever cracking the password.
+
+## Minimal requirements for success
+
+- SMB signing is not enforced on the target machine (unsigned SMB makes relaying possible).
+- The relayed account must have sufficient privileges on the target (e.g., an administrator) — otherwise the attacker’s access will be limited.
+
 # listen with responder
 sudo responder -I eth0 -ldwPv
 
@@ -113,11 +118,11 @@ also make sure to install Active directory certificate services for other attack
 
 
 2. SMB Relay attacks
-instead of capturing the hash with the responder tool, we can relay the hash via smb and gain access to a machine
 
 Requirement for SMB relay attack to occur
-smb signing disable or not enforced on the target
-The relayed user credential must be an admin 
+SMB signing is not enforced on the target machine (unsigned SMB makes relaying possible).
+
+The relayed account must have sufficient privileges on the target (e.g., an administrator) — otherwise the attacker’s access will be limited. 
 
 from the responder setting (/etc/responder/Responder.conf), switch off SMB and HTTP flag
 then run the command Sudo responder -I eth0 -ldwPv - (what does this command do)
