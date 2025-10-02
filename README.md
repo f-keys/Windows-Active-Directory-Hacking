@@ -394,6 +394,7 @@ bloodhound-python -d <DOMAIN> -u <USER> -p '<PASSWORD>' -ns <DC_IP> -c all
 ```
    <img width="719" height="345" alt="image" src="https://github.com/user-attachments/assets/f71c1910-d78a-463b-b9c2-3fdb22b8b543" />
    <img width="691" height="88" alt="image" src="https://github.com/user-attachments/assets/6d3794d4-daa1-4d21-b394-6e1292869af9" />
+   
 ### How to use the results
 
 - Open the BloodHound GUI.
