@@ -82,14 +82,17 @@ Concise, lab-oriented notes about offensive techniques against Windows Active Di
 
 - **Walkthrough**
 
- Run `sudo responder -I eth0 -ldwPv`. Here, Responder run on the eth0 interface and (based on the flags used) will: bind to that interface, enable several responder modules (including WPAD), run in verbose mode, and log/capture authentication attempts (NTLM hashes) from hosts on the network. Responder will reply to name-resolution broadcasts (LLMNR/NetBIOS/mDNS) and serve rogue HTTP/SMB/etc. endpoints to collect credentials on the attacker machine. Then on the victim system, we can simulate an event occuring to capture the hash.
+ Run `sudo responder -I eth0 -ldwPv`. Here, Responder runs on the eth0 interface and (based on the flags used) will: bind to that interface, enable several responder modules (including WPAD), run in verbose mode, and log/capture authentication attempts (NTLM hashes) from hosts on the network. Responder will reply to name-resolution broadcasts (LLMNR/NetBIOS/mDNS) and serve rogue HTTP/SMB/etc. endpoints to collect credentials on the attacker machine. Then on the victim system, we can simulate an event occuring to capture the hash.
  
-The hash of the victim is them capture on responder
+The hash of the victim is then captured on responder
 
 
 <img width="696" height="197" alt="image" src="https://github.com/user-attachments/assets/9d0d67af-20d0-4068-b26c-d3cc71c62a3b" />
 
-We can then crack the Hash using hashcat
+We can then crack the Hash using hashcat. `hashcash -m 5600 hashes.txt /path/to/wordlist/ `
+
+<img width="1877" height="390" alt="image" src="https://github.com/user-attachments/assets/da11dacb-30ec-435e-963f-008ea1ae7db7" />
+
 # listen with responder
 sudo responder -I eth0 -ldwPv
 
@@ -119,7 +122,6 @@ The hash of the victim is them capture on responder
 
 To crack the hash, run the command, 
 hashcash -m 5600 hashes.txt /path/to/wordlist/ 
-<img width="1877" height="390" alt="image" src="https://github.com/user-attachments/assets/da11dacb-30ec-435e-963f-008ea1ae7db7" />
 
 LLMNR Mitigation
 turn off LLMNR
