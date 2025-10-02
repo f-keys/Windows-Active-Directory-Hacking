@@ -470,25 +470,53 @@ crackmapexec -smb <ip/CIDR> -u administrator -H <ntlm_hash> --local-auth
    <img width="1249" height="335" alt="image" src="https://github.com/user-attachments/assets/ebf6b291-1c53-40f3-8005-037e9aa229ef" />
 
 
-crackmapexec smb -L
+# `crackmapexec smb -L` 
+
+`crackmapexec smb -L` lists the available **SMB modules** bundled with your CrackMapExec (CME) installation. Use it when you want to see which enumeration, exploitation or post-exploitation modules you can run against SMB targets (then run a module with `-M <module>`).
 
 <img width="1540" height="593" alt="image" src="https://github.com/user-attachments/assets/820248c6-d5ed-4b2a-a7e5-6bb541ca1ed1" />
 
 
-DUMPING and CRACKING HASHES
-this can be achieved with the use of secretsdump
-cmd: impacket-secretsdump <domain>\<user>:'Password'@<ip-address>
+# Dumping & Cracking Hashes
+
+This section explains how attackers (or authorised testers) can dump Windows credential material with `impacket-secretsdump` and how hashes are cracked and reused for lateral movement. Keep this for lab use or defensive awareness only.
+
+---
+
+## A. Dumping hashes with `secretsdump` (Impacket)
+
+### Basic command (LDAP/SMB bind with plaintext creds)
+```bash
+impacket-secretsdump DOMAIN\\User:'Password'@<TARGET_IP>
+```
    <img width="1211" height="632" alt="image" src="https://github.com/user-attachments/assets/9328fd5b-74ac-47b9-b3db-a9ff50eb7791" />
 
-   this tool can dump alot of information. sam hashes, lsa, DCC2, LSA Secrets, ability to see password in cleartext,wdigest.( 
+#### What `secretsdump` can return
 
-you also use hashes with secretsdumps command
-cmd: impacket-secretdump administrator:@<ip_address> -hashes shjdfjhjsdfjksf
+- SAM hashes (local account hashes) and domain account hashes (if run against a DC with sufficient privileges).
+- LSA Secrets (may contain service account passwords, keys, and stored credentials).
+- Cached credentials (DCC2) — useful for offline cracking or reuse.
+- Anything exposed by WDigest / plaintext storage on older or misconfigured systems.
 
+#### Using captured hashes instead of plaintext
+```bash
+impacket-secretdump administrator:@<ip_address> -hashes shjdfjhjsdfjksf
+```
    <img width="1153" height="634" alt="image" src="https://github.com/user-attachments/assets/b98a3497-4503-454d-a095-a7688b4347f6" />
 
-so imagine we have llmnr -> get user hash -> cracked hashes -> spray the password -> found new login -> secretdump the logins - > local admin hashes - > respray the network with local accounts
+#### Typical attack chain
+---
+- 1. LLMNR/NBT-NS/WPAD → victim leaks an NTLM auth.
 
+- 2. Capture hash via Responder / interception.
+
+- 3. Crack the hash to recover plaintext (if feasible) or reuse the NT hash directly.
+
+- 4. Use crackmapexec or other tools to spray the cracked password across hosts.
+
+- 5. When a new successful login is found, run impacket-secretsdump on that host to dump local SAM/LSA and harvest more local-admin hashes.
+
+- 6. Reuse captured local admin hashes (pass-the-hash) across other machines — pivot and escalate.
 you can also crack hashes. You need NT portion of the hash when you wanna crack the hash. 
 
 Pass the hash / Pass the password Mitigation
